@@ -38,24 +38,25 @@ function manageCoMenu() {
         .then(function (data) {
             if (data.menu === 'View all employees') {
                 viewAllEmployees();
+                
             } else if (data.menu === 'Add employee') {
                 addEmployee();
-                manageCoMenu();
+
             } else if (data.menu === 'Update employee role') {
                 updateEmployeeRole();
-                manageCoMenu();
+              
             } else if (data.menu === 'View all roles') {
                 viewAllRoles();
-                manageCoMenu();
+          
             } else if (data.menu === 'Add role') {
                 addRole();
-                manageCoMenu();
+               
             } else if (data.menu === 'View all departments') {
                 viewAllDepartments();
-                manageCoMenu();
+               
             } else if (data.menu === 'Add department') {
                 addDepartment();
-                manageCoMenu();
+              
             } else {
                 leave();
             }
