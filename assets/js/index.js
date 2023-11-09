@@ -77,27 +77,75 @@ function viewAllEmployees() {
 };
 
 function addEmployee() {
-    console.log('added e');//replace with dbquery function
+    db.query('SELECT * FROM departments', (err, data) => {
+        if (err) {
+            console.log('Ain\'t happenin\' today.')
+        } else {
+            console.table(data);
+            manageCoMenu();
+        }
+
+    })
 };
 
 function updateEmployeeRole() {
-    console.log('update e');//replace with dbquery function
+    db.query('SELECT * FROM departments', (err, data) => {
+        if (err) {
+            console.log('Ain\'t happenin\' today.')
+        } else {
+            console.table(data);
+            manageCoMenu();
+        }
+
+    })
 };
 
 function viewAllRoles() {
-    console.log('roles');//replace with dbquery function
+    db.query('SELECT * FROM roles', (err, data) => {
+        if (err) {
+            console.log('Ain\'t happenin\' today.')
+        } else {
+            console.table(data);
+            manageCoMenu();
+        }
+
+    })
 };
 
 function addRole() {
-    console.log('added r');//replace with dbquery function
+    db.query('SELECT * FROM departments', (err, data) => {
+        if (err) {
+            console.log('Ain\'t happenin\' today.')
+        } else {
+            console.table(data);
+            manageCoMenu();
+        }
+
+    })
 };
 
 function viewAllDepartments() {
-    console.log('depts');//replace with dbquery function
+    db.query('SELECT * FROM departments', (err, data) => {
+        if (err) {
+            console.log('Ain\'t happenin\' today.')
+        } else {
+            console.table(data);
+            manageCoMenu();
+        }
+
+    })
 };
 
 function addDepartment() {
-    console.log('added d');//replace with dbquery function
+    db.query('SELECT * FROM departments', (err, data) => {
+        if (err) {
+            console.log('Ain\'t happenin\' today.')
+        } else {
+            console.table(data);
+            manageCoMenu();
+        }
+
+    })
 };
 
 function leave() {
