@@ -1,0 +1,16 @@
+{
+  "name": "manage-co",
+  "version": "1.0.0",
+  "description": "Command line app tracks employees, departments, and roles to help organize business",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "inquirer": "^8.2.4",
+    "mysql2": "^3.6.3"
+  }
+}
