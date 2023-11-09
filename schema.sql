@@ -23,8 +23,3 @@ CREATE TABLE employees(
     manager_id INT,
     FOREIGN KEY (role_id) REFERENCES roles(id) ON DELETE SET NULL
 );
-
-INSERT INTO departments (name) VALUES ('Legal'), ('Marketing'), ('Production'), ('Talent');
-
-INSERT INTO roles (title) VALUES ('Lawyer'), ('Copywriter'), ('CSR'), ('Producer'), ('Camera-person'), ('Talent Relations'), ('Wrestler'), ('Valet');
-

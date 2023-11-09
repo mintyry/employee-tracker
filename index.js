@@ -1,16 +1,17 @@
 const inquirer = require('inquirer');
-const fs = require('fs');
-const { viewAllEmployees, addEmployee, updateEmployeeRole, viewAllRoles, addRole, viewAllDepartments, addDepartment, leave } = require('./queries.js')
-// const mysql = require('mysql2');
-// const db = mysql.createConnection(
-//     {
-//         host: 'localhost',
-//         database: 'manageco',
-//         user: 'root',
-//         password: ''
-//     },
-//     console.log('Thanks for visiting my database.\nIt\'s nice to finally have some company around here.\nLet\'s get to work, shall we?')
-// );
+require('console.table');
+// const { viewAllEmployees, addEmployee, updateEmployeeRole, viewAllRoles, addRole, viewAllDepartments, addDepartment, leave } = require('./queries.js')
+
+const mysql = require('mysql2');
+const db = mysql.createConnection(
+    {
+        host: 'localhost',
+        database: 'manageco',
+        user: 'root',
+        password: ''
+    },
+    console.log('Thanks for visiting my database.\nIt\'s nice to finally have some company around here.\nLet\'s get to work, shall we?')
+);
 
 const questions = [
     //initial menu question
@@ -37,7 +38,6 @@ function manageCoMenu() {
         .then(function (data) {
             if (data.menu === 'View all employees') {
                 viewAllEmployees();
-                manageCoMenu();
             } else if (data.menu === 'Add employee') {
                 addEmployee();
                 manageCoMenu();
@@ -60,6 +60,49 @@ function manageCoMenu() {
                 leave();
             }
         });
+};
+
+
+
+function viewAllEmployees() {
+    db.query('SELECT * FROM departments', (err, data) => {
+        if (err) {
+            console.log('Ain\'t happenin\' today.')
+        } else {
+            console.table(data);
+            manageCoMenu();
+        }
+
+    })
+};
+
+function addEmployee() {
+    console.log('added e');//replace with dbquery function
+};
+
+function updateEmployeeRole() {
+    console.log('update e');//replace with dbquery function
+};
+
+function viewAllRoles() {
+    console.log('roles');//replace with dbquery function
+};
+
+function addRole() {
+    console.log('added r');//replace with dbquery function
+};
+
+function viewAllDepartments() {
+    console.log('depts');//replace with dbquery function
+};
+
+function addDepartment() {
+    console.log('added d');//replace with dbquery function
+};
+
+function leave() {
+    console.log('Fine, leave me.');
+    process.exit();
 };
 
 manageCoMenu();
