@@ -38,25 +38,25 @@ function manageCoMenu() {
         .then(function (data) {
             if (data.menu === 'View all employees') {
                 viewAllEmployees();
-                
+
             } else if (data.menu === 'Add employee') {
                 addEmployee();
 
             } else if (data.menu === 'Update employee role') {
                 updateEmployeeRole();
-              
+
             } else if (data.menu === 'View all roles') {
                 viewAllRoles();
-          
+
             } else if (data.menu === 'Add role') {
                 addRole();
-               
+
             } else if (data.menu === 'View all departments') {
                 viewAllDepartments();
-               
+
             } else if (data.menu === 'Add department') {
                 addDepartment();
-              
+
             } else {
                 leave();
             }
@@ -138,15 +138,30 @@ function viewAllDepartments() {
 };
 
 function addDepartment() {
-    db.query('SELECT * FROM departments', (err, data) => {
-        if (err) {
-            console.log('Ain\'t happenin\' today.')
-        } else {
-            console.table(data);
-            manageCoMenu();
-        }
 
-    })
+    function askToAdd() {
+        inquirer
+            .prompt( [{
+                type: 'input',
+                name: 'addD',
+                message: 'What is the name of this department?'
+            }])
+            .then(function (data) {
+                console.log(`I want to add ${data.addD}.`);//make the the db.query; use prepared statement
+            })
+    };
+
+    askToAdd();
+
+    // db.query('INSERT INTO departments (name) VALUES ("announcer");', (err, data) => {
+    //     if (err) {
+    //         console.log('Ain\'t happenin\' today.')
+    //     } else {
+    //         console.table(data);
+    //         manageCoMenu();
+    //     }
+
+    // })
 };
 
 function leave() {
