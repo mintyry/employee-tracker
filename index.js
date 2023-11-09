@@ -65,7 +65,7 @@ function manageCoMenu() {
 
 
 function viewAllEmployees() {
-    db.query('SELECT * FROM departments', (err, data) => {
+    db.query('SELECT * FROM employees', (err, data) => {
         if (err) {
             console.log('Ain\'t happenin\' today.')
         } else {
