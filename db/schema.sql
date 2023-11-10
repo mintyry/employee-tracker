@@ -27,4 +27,5 @@ CREATE TABLE employees(
 INSERT INTO departments (name) 
 VALUES ('Legal'), ('Marketing'), ('Production'), ('Talent');
 
-INSERT INTO departments (name) VALUES ('announcer');
+-- test to see how to write add statement
+-- INSERT INTO departments (name) VALUES ('announcer');

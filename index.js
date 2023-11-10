@@ -139,29 +139,27 @@ function viewAllDepartments() {
 
 function addDepartment() {
 
-    function askToAdd() {
-        inquirer
-            .prompt( [{
-                type: 'input',
-                name: 'addD',
-                message: 'What is the name of this department?'
-            }])
-            .then(function (data) {
-                console.log(`I want to add ${data.addD}.`);//make the the db.query; use prepared statement
+    inquirer
+        .prompt([{
+            type: 'input',
+            name: 'addD',
+            message: 'What is the name of this department?'
+        }])
+        .then(function (data) {
+            //works! but see if you can add the line to capitalize only first letter
+            db.query('INSERT INTO departments (name) VALUES (?)', [data.addD], (err, data) => {
+                if (err) {
+                    console.log('Ain\'t happenin\' today.')
+                } else {
+                    console.table(data);
+                    manageCoMenu();
+                }
+
             })
-    };
+        })
+    // console.log(`I want to add ${data.addD}`)
 
-    askToAdd();
-
-    // db.query('INSERT INTO departments (name) VALUES ("announcer");', (err, data) => {
-    //     if (err) {
-    //         console.log('Ain\'t happenin\' today.')
-    //     } else {
-    //         console.table(data);
-    //         manageCoMenu();
-    //     }
-
-    // })
+    //
 };
 
 function leave() {
