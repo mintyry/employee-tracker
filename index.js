@@ -147,7 +147,8 @@ function addDepartment() {
         }])
         .then(function (data) {
             //works! but see if you can add the line to capitalize only first letter
-            db.query('INSERT INTO departments (name) VALUES (?)', [data.addD], (err, data) => {
+            const userEntry = data.addD.toLowerCase();
+            db.query('INSERT INTO departments (name) VALUES (?)', [userEntry.charAt(0).toUpperCase() + (userEntry).slice(1)], (err, data) => {
                 if (err) {
                     console.log('Ain\'t happenin\' today.')
                 } else {
