@@ -35,7 +35,7 @@ const questions = [
     }
 ]
 
-function manageCoMenu() {
+function menu() {
     inquirer
         .prompt(questions)
         .then(function (data) {
@@ -74,7 +74,7 @@ function viewAllEmployees() {
             console.log('Welp, that ERROR wasn\'t meant to happen.')
         } else {
             console.table(data);
-            manageCoMenu();
+            menu();
         }
 
     })
@@ -101,12 +101,12 @@ function addEmployee() {
             // }
         ])
         .then(function (data) {
-            db.query('SELECT * FROM departments', (err, data) => {
+            db.query('SELECT * FROM employees', (err, data) => {
                 if (err) {
                     console.log('Welp, that ERROR wasn\'t meant to happen.')
                 } else {
                     console.table(data);
-                    manageCoMenu();
+                    menu();
                 }
 
             })
@@ -120,7 +120,7 @@ function updateEmployeeRole() {
             console.log('Welp, that ERROR wasn\'t meant to happen.')
         } else {
             console.table(data);
-            manageCoMenu();
+            menu();
         }
 
     })
@@ -133,7 +133,7 @@ function viewAllRoles() {
             console.log('Welp, that ERROR wasn\'t meant to happen.')
         } else {
             console.table(data);
-            manageCoMenu();
+            menu();
         }
 
     })
@@ -194,35 +194,34 @@ function addRole() {
                         console.log('Welp, that ERROR wasn\'t meant to happen.');
                     } else {
                         console.log('Role salary added.');
-                        manageCoMenu();
+                        menu();
                     }
                 }
             );
             const dept = data.addRD;
-            const desiredId =
-                db.query('SELECT id FROM departments WHERE name = (?)',
-                    [dept],
-                    (err, data) => {
-                        if (err) {
-                            console.log('Welp, that ERROR wasn\'t meant to happen.')
-                        } else {
-                           console.log(data);
-                        }
-                    });
-            const deptId = desiredId.toString();
-            db.query(
-                'UPDATE roles SET department_id = (?) WHERE title = (?)',
-                [deptId.toString(), userRole],
+            db.query('SELECT id FROM departments WHERE name = (?)',
+                [dept],
                 (err, data) => {
                     if (err) {
-                        console.log('Welp, that ERROR wasn\'t meant to happen.');
-                        console.log(deptId);
+                        console.log('Welp, that ERROR wasn\'t meant to happen.')
                     } else {
-                        console.log('Role title added.');
-                        console.log(deptId);
+                        const deptId = data[0].id;
+                        db.query(
+                            'UPDATE roles SET department_id = (?) WHERE title = (?)',
+                            [deptId.toString(), userRole],
+                            (err, data) => {
+                                if (err) {
+                                    console.log('Welp, that ERROR wasn\'t meant to happen.');
+                                } else {
+                                    console.log('Role complete.');
+                                    // viewAllRoles();
+                                    menu();
+                                }
+                            }
+                        );
                     }
-                }
-            );
+                });
+
         })
 };
 
@@ -233,7 +232,7 @@ function viewAllDepartments() {
             console.log('Welp, that ERROR wasn\'t meant to happen.')
         } else {
             console.table(data);
-            manageCoMenu();
+            menu();
         }
 
     })
@@ -259,7 +258,7 @@ function addDepartment() {
                     if (err) {
                         console.log('Welp, that ERROR wasn\'t meant to happen.')
                     } else {
-                        manageCoMenu();
+                        menu();
                     }
 
                 })
@@ -274,4 +273,4 @@ function leave() {
     process.exit();
 };
 
-manageCoMenu();
+menu();
