@@ -1,3 +1,5 @@
+//todo: dept_id for Add Role,
+
 const inquirer = require('inquirer');
 require('console.table');
 // const { viewAllEmployees, addEmployee, updateEmployeeRole, viewAllRoles, addRole, viewAllDepartments, addDepartment, leave } = require('./queries.js')
@@ -11,6 +13,7 @@ const db = mysql.createConnection(
         password: ''
     },
     console.log('Thanks for visiting my database.\nIt\'s nice to finally have some company around here.\nLet\'s get to work, shall we?')
+    
 );
 
 const questions = [
@@ -68,7 +71,7 @@ function manageCoMenu() {
 function viewAllEmployees() {
     db.query('SELECT * FROM employees', (err, data) => {
         if (err) {
-            console.log('Ain\'t happenin\' today.')
+            console.log('Welp, that ERROR wasn\'t meant to happen.')
         } else {
             console.table(data);
             manageCoMenu();
@@ -78,21 +81,43 @@ function viewAllEmployees() {
 };
 
 function addEmployee() {
-    db.query('SELECT * FROM departments', (err, data) => {
-        if (err) {
-            console.log('Ain\'t happenin\' today.')
-        } else {
-            console.table(data);
-            manageCoMenu();
-        }
+    inquirer
+        .prompt([
+            {
+                type: 'input',
+                name: 'addFirst',
+                message: 'What is the new employee\'s first name?'
+            },
+            {
+                type: 'input',
+                name: 'addLast',
+                message: 'What is the new employee\'s last name?'
+            },
+            // {
+            //     type: 'list',
+            //     name: 'addRD',
+            //     message: 'To which department does this role belong?',
+            //     choices: 
+            // }
+        ])
+        .then(function (data) {
+            db.query('SELECT * FROM departments', (err, data) => {
+                if (err) {
+                    console.log('Welp, that ERROR wasn\'t meant to happen.')
+                } else {
+                    console.table(data);
+                    manageCoMenu();
+                }
 
-    })
+            })
+        })
+
 };
 
 function updateEmployeeRole() {
     db.query('SELECT * FROM departments', (err, data) => {
         if (err) {
-            console.log('Ain\'t happenin\' today.')
+            console.log('Welp, that ERROR wasn\'t meant to happen.')
         } else {
             console.table(data);
             manageCoMenu();
@@ -105,7 +130,7 @@ function viewAllRoles() {
     //prints all content from roles table
     db.query('SELECT * FROM roles', (err, data) => {
         if (err) {
-            console.log('Ain\'t happenin\' today.')
+            console.log('Welp, that ERROR wasn\'t meant to happen.')
         } else {
             console.table(data);
             manageCoMenu();
@@ -115,6 +140,17 @@ function viewAllRoles() {
 };
 
 function addRole() {
+    const deptList = [];
+    db.query('SELECT name FROM departments', (err, data) => {
+        if (err) {
+            console.log('Welp, that ERROR wasn\'t meant to happen.')
+        } else {
+            data.forEach((deptChoice) => {
+                deptList.push(deptChoice.name);
+            });
+        }
+
+    })
     inquirer
         .prompt([
             {
@@ -131,7 +167,7 @@ function addRole() {
                 type: 'list',
                 name: 'addRD',
                 message: 'To which department does this role belong?',
-                choices: ['hi']
+                choices: deptList
             }
         ])
         .then(function (data) {
@@ -142,7 +178,7 @@ function addRole() {
                 [userRole],
                 (err, data) => {
                     if (err) {
-                        console.log('Ain\'t happenin\' today.')
+                        console.log('Welp, that ERROR wasn\'t meant to happen.')
                     } else {
                         console.log('Role title added.')
                     }
@@ -154,7 +190,7 @@ function addRole() {
                 [roleSalary, userRole],
                 (err, data) => {
                     if (err) {
-                        console.log('Ain\'t happenin\' today.');
+                        console.log('Welp, that ERROR wasn\'t meant to happen.');
                     } else {
                         console.log('Role salary added.');
                         manageCoMenu();
@@ -168,7 +204,7 @@ function addRole() {
                 [roleDept, userRole],
                 (err, data) => {
                     if (err) {
-                        console.log('Ain\'t happenin\' today.')
+                        console.log('Welp, that ERROR wasn\'t meant to happen.')
                     } else {
                         console.log('Role title added.')
                     }
@@ -181,7 +217,7 @@ function viewAllDepartments() {
     //prints all content from departments table
     db.query('SELECT * FROM departments', (err, data) => {
         if (err) {
-            console.log('Ain\'t happenin\' today.')
+            console.log('Welp, that ERROR wasn\'t meant to happen.')
         } else {
             console.table(data);
             manageCoMenu();
@@ -208,7 +244,7 @@ function addDepartment() {
                 //third parameter is callback fn
                 (err, data) => {
                     if (err) {
-                        console.log('Ain\'t happenin\' today.')
+                        console.log('Welp, that ERROR wasn\'t meant to happen.')
                     } else {
                         manageCoMenu();
                     }
