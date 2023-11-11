@@ -13,7 +13,7 @@ const db = mysql.createConnection(
         password: ''
     },
     console.log('Thanks for visiting my database.\nIt\'s nice to finally have some company around here.\nLet\'s get to work, shall we?')
-    
+
 );
 
 const questions = [
@@ -140,6 +140,7 @@ function viewAllRoles() {
 };
 
 function addRole() {
+    //may want to move this; but now, how can i register the user's choice as a dept_id?
     const deptList = [];
     db.query('SELECT name FROM departments', (err, data) => {
         if (err) {
@@ -198,15 +199,27 @@ function addRole() {
                 }
             );
             const dept = data.addRD;
-            const roleDept = [dept.charAt(0).toUpperCase() + (dept).slice(1)]
+            const desiredId =
+                db.query('SELECT id FROM departments WHERE name = (?)',
+                    [dept],
+                    (err, data) => {
+                        if (err) {
+                            console.log('Welp, that ERROR wasn\'t meant to happen.')
+                        } else {
+                           console.log(data);
+                        }
+                    });
+            const deptId = desiredId.toString();
             db.query(
                 'UPDATE roles SET department_id = (?) WHERE title = (?)',
-                [roleDept, userRole],
+                [deptId.toString(), userRole],
                 (err, data) => {
                     if (err) {
-                        console.log('Welp, that ERROR wasn\'t meant to happen.')
+                        console.log('Welp, that ERROR wasn\'t meant to happen.');
+                        console.log(deptId);
                     } else {
-                        console.log('Role title added.')
+                        console.log('Role title added.');
+                        console.log(deptId);
                     }
                 }
             );
