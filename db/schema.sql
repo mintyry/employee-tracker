@@ -24,8 +24,8 @@ CREATE TABLE employees(
     FOREIGN KEY (role_id) REFERENCES roles(id) ON DELETE SET NULL
 );
 
-INSERT INTO departments (name) 
-VALUES ('Legal'), ('Marketing'), ('Production'), ('Talent');
+-- INSERT INTO departments (name) 
+-- VALUES ('Legal'), ('Marketing'), ('Production'), ('Talent');
 
 -- test to see how to write add statement
 -- INSERT INTO departments (name) VALUES ('announcer');

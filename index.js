@@ -102,6 +102,7 @@ function updateEmployeeRole() {
 };
 
 function viewAllRoles() {
+    //prints all content from roles table
     db.query('SELECT * FROM roles', (err, data) => {
         if (err) {
             console.log('Ain\'t happenin\' today.')
@@ -114,18 +115,70 @@ function viewAllRoles() {
 };
 
 function addRole() {
-    db.query('SELECT * FROM departments', (err, data) => {
-        if (err) {
-            console.log('Ain\'t happenin\' today.')
-        } else {
-            console.table(data);
-            manageCoMenu();
-        }
-
-    })
+    inquirer
+        .prompt([
+            {
+                type: 'input',
+                name: 'addR',
+                message: 'What is the name of this new role?'
+            },
+            {
+                type: 'input',
+                name: 'addRS',
+                message: 'What is the salary of this role?'
+            },
+            {
+                type: 'list',
+                name: 'addRD',
+                message: 'To which department does this role belong?',
+                choices: ['hi']
+            }
+        ])
+        .then(function (data) {
+            const role = data.addR;
+            const userRole = role.charAt(0).toUpperCase() + (role).slice(1)
+            db.query(
+                'INSERT INTO roles (title) VALUES (?)',
+                [userRole],
+                (err, data) => {
+                    if (err) {
+                        console.log('Ain\'t happenin\' today.')
+                    } else {
+                        console.log('Role title added.')
+                    }
+                }
+            );
+            const roleSalary = data.addRS;
+            db.query(
+                'UPDATE roles SET salary = (?) WHERE title = (?)',
+                [roleSalary, userRole],
+                (err, data) => {
+                    if (err) {
+                        console.log('Ain\'t happenin\' today.');
+                    } else {
+                        console.log('Role salary added.');
+                        manageCoMenu();
+                    }
+                }
+            );
+            const dept = data.addRD;
+            const roleDept = [dept.charAt(0).toUpperCase() + (dept).slice(1)]
+            db.query(
+                'UPDATE roles SET department_id = (?) WHERE title = (?)',
+                [roleDept, userRole],
+                (err, data) => {
+                    if (err) {
+                        console.log('Ain\'t happenin\' today.')
+                    } else {
+                        console.log('Role title added.')
+                    }
+                }
+            );
+        })
 };
 
 function viewAllDepartments() {
+    //prints all content from departments table
     db.query('SELECT * FROM departments', (err, data) => {
         if (err) {
             console.log('Ain\'t happenin\' today.')
@@ -146,17 +199,21 @@ function addDepartment() {
             message: 'What is the name of this department?'
         }])
         .then(function (data) {
-            //works! but see if you can add the line to capitalize only first letter
-            const userEntry = data.addD.toLowerCase();
-            db.query('INSERT INTO departments (name) VALUES (?)', [userEntry.charAt(0).toUpperCase() + (userEntry).slice(1)], (err, data) => {
-                if (err) {
-                    console.log('Ain\'t happenin\' today.')
-                } else {
-                    console.table(data);
-                    manageCoMenu();
-                }
+            //makes user's input lowercase, first parameter of this query is SQL prepared statement;allowing uppercase for acronyms
+            const userDept = data.addD;
+            //adds user's input into the table; also capitalizes first letter of their entry.
+            db.query('INSERT INTO departments (name) VALUES (?)',
+                //second parameter is the data we write; in this case, it is userDept
+                [userDept.charAt(0).toUpperCase() + (userDept).slice(1)],
+                //third parameter is callback fn
+                (err, data) => {
+                    if (err) {
+                        console.log('Ain\'t happenin\' today.')
+                    } else {
+                        manageCoMenu();
+                    }
 
-            })
+                })
         })
     // console.log(`I want to add ${data.addD}`)
 
