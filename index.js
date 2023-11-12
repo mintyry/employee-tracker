@@ -153,6 +153,8 @@ function addEmployee() {
                 );
                 const last = data.addLast;
                 const lastName = last.charAt(0).toUpperCase() + (last).slice(1);
+                const fullName = firstName + " " + lastName;
+                console.log(fullName);
                 db.query(
                     'UPDATE employees SET last_name = (?) WHERE first_name = (?)',
                     [lastName, firstName],
@@ -173,7 +175,6 @@ function addEmployee() {
                             console.log('omg')
                         } else {
                             const roleId = data[0].id;
-                            console.log(roleId);
                             db.query(
                                 'UPDATE employees SET role_id = (?) WHERE first_name = (?)',
                                 [roleId.toString(), firstName],
@@ -182,17 +183,44 @@ function addEmployee() {
                                         console.log('Welp, that ERROR wasn\'t meant to happen.');
                                     } else {
                                         console.log('Employee role entered.');
-                                        menu();
                                     }
                                 }
                             );
                         }
                     });
+                const inputMgrId = data.addEM;
+                db.query(
+                    'SELECT id FROM employees WHERE CONCAT(employees.first_name, " ", employees.last_name) = (?)',
+                    [inputMgrId],
+                    (err, data) => {
+                        if (err) {
+                            console.log('Welp, that ERROR wasn\'t meant to happen.');
+                        } else {
+                            console.log(data);
+                            const mgrId = data[0].id;
+                            console.log(mgrId);
+                            console.log(inputMgrId);
+                            db.query(
+                                'UPDATE employees SET manager_id = (?) WHERE CONCAT(employees.first_name, " ", employees.last_name) = (?)',
+                                [mgrId.toString(), fullName],
+                                (err, data) => {
+                                    if (err) {
+                                        console.log('Welp, that ERROR wasn\'t meant to happen.');
+                                    } else {
+                                        console.log(data);
+                                        console.log('Employee successfully added.');
+                                        menu();
+                                    }
+                                }
+                            );
+                        }
+                    }
+                )
 
 
-            });
-    }
-};
+            });//ends .then()
+    }//ends function addMgrList
+};//ends addEmploee()
 
 
 
