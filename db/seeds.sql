@@ -18,5 +18,5 @@ VALUES  ('Roman', 'Reigns', 7, 3),
         ('Mark', 'Sterling', 1, null),
         ('Matt', 'Cardona', 5, 3),
         ('Earl', 'Hebner', 6, 3),
-        ('Paul', 'Heyman', 8, 7),
-        ('Renee', 'Paquette', 2, 3);
+        ('Paul', 'Heyman', 8, 1),
+        ('Renee', 'Paquette', 2, 7);

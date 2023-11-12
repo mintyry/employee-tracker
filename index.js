@@ -91,85 +91,105 @@ function addEmployee() {
             });
         }
     });
-    inquirer
-        .prompt([
-            {
-                type: 'input',
-                name: 'addFirst',
-                message: 'What is the new employee\'s first name?'
-            },
-            {
-                type: 'input',
-                name: 'addLast',
-                message: 'What is the new employee\'s last name?'
-            },
-            {
-                type: 'list',
-                name: 'addER',
-                message: 'What is this employee\'s role?',
-                choices: knowYourRole
-            }
-            // {
-            //     type: 'list',
-            //     name: 'addEM',
-            //     message: 'Who is this employee\'s manager?',
-            //     choices: 
-            // }
 
-        ])
-        .then(function (data) {
-            const first = data.addFirst;
-            const firstName = first.charAt(0).toUpperCase() + (first).slice(1);
-            db.query(
-                'INSERT INTO employees (first_name) VALUES (?)',
-                [firstName],
-                (err, data) => {
-                    if (err) {
-                        console.log('Welp, that ERROR wasn\'t meant to happen.')
-                    } else {
-                        console.log('First name added.')
-                    }
-                }
-            );
-            const last = data.addLast;
-            const lastName = last.charAt(0).toUpperCase() + (last).slice(1);
-            db.query(
-                'UPDATE employees SET last_name = (?) WHERE first_name = (?)',
-                [lastName, firstName],
-                (err, data) => {
-                    if (err) {
-                        console.log('Welp, that ERROR wasn\'t meant to happen.')
-                    } else {
-                        console.log('Last name added.')
-                        menu();
-                    }
-                }
-            );
-            const role = data.addER;
-            db.query('SELECT id FROM roles WHERE title = (?)',
-                [role],
-                (err, data) => {
-                    if (err) {
-                        console.log('omg')
-                    } else {
-                        const roleId = data[0].id;
-                        console.log(roleId);
+    const managerList = [];
+
+    db.query('SELECT CONCAT(manage_table.first_name, " ", manage_table.last_name) AS manager FROM employees LEFT JOIN employees as manage_table ON employees.manager_id = manage_table.id;',
+        (err, data) => {
+            if (err) {
+                console.log('Uh-oh, managers are not showing.')
+            } else {
+                data.forEach((mgrChoice) => {
+                    managerList.push(mgrChoice.manager);
+                });
+                const noNullMgr = managerList.filter((managers) => {
+                    return managers !== null
+                })
+                const uniqueManagerList = [...new Set(noNullMgr)];
+                console.log(uniqueManagerList);
+
+                inquirer
+                    .prompt([
+                        {
+                            type: 'input',
+                            name: 'addFirst',
+                            message: 'What is the new employee\'s first name?'
+                        },
+                        {
+                            type: 'input',
+                            name: 'addLast',
+                            message: 'What is the new employee\'s last name?'
+                        },
+                        {
+                            type: 'list',
+                            name: 'addER',
+                            message: 'What is this employee\'s role?',
+                            choices: knowYourRole
+                        },
+                        {
+                            type: 'list',
+                            name: 'addEM',
+                            message: 'Who is this employee\'s manager?',
+                            choices: uniqueManagerList
+                        }
+
+                    ])
+                    .then(function (data) {
+                        const first = data.addFirst;
+                        const firstName = first.charAt(0).toUpperCase() + (first).slice(1);
                         db.query(
-                            'UPDATE employees SET role_id = (?) WHERE first_name = (?)',
-                            [roleId.toString(), firstName],
+                            'INSERT INTO employees (first_name) VALUES (?)',
+                            [firstName],
                             (err, data) => {
                                 if (err) {
-                                    console.log('Welp, that ERROR wasn\'t meant to happen.');
+                                    console.log('Welp, that ERROR wasn\'t meant to happen.')
                                 } else {
-                                    console.log('Employee role entered.');
+                                    console.log('First name added.')
+                                }
+                            }
+                        );
+                        const last = data.addLast;
+                        const lastName = last.charAt(0).toUpperCase() + (last).slice(1);
+                        db.query(
+                            'UPDATE employees SET last_name = (?) WHERE first_name = (?)',
+                            [lastName, firstName],
+                            (err, data) => {
+                                if (err) {
+                                    console.log('Welp, that ERROR wasn\'t meant to happen.')
+                                } else {
+                                    console.log('Last name added.')
                                     menu();
                                 }
                             }
                         );
-                    }
-                });
+                        const empRole = data.addER;
+                        db.query('SELECT id FROM roles WHERE title = (?)',
+                            [empRole],
+                            (err, data) => {
+                                if (err) {
+                                    console.log('omg')
+                                } else {
+                                    const roleId = data[0].id;
+                                    console.log(roleId);
+                                    db.query(
+                                        'UPDATE employees SET role_id = (?) WHERE first_name = (?)',
+                                        [roleId.toString(), firstName],
+                                        (err, data) => {
+                                            if (err) {
+                                                console.log('Welp, that ERROR wasn\'t meant to happen.');
+                                            } else {
+                                                console.log('Employee role entered.');
+                                                menu();
+                                            }
+                                        }
+                                    );
+                                }
+                            });
 
 
+                    });
+
+            }
         });
 };
 
