@@ -95,23 +95,47 @@ function addEmployee() {
             },
             // {
             //     type: 'list',
-            //     name: 'addRD',
-            //     message: 'To which department does this role belong?',
+            //     name: 'addER',
+            //     message: 'What is this employee\'s role?',
+            //     choices: 
+            // },
+            // {
+            //     type: 'list',
+            //     name: 'addEM',
+            //     message: 'Who is this employee\'s manager?',
             //     choices: 
             // }
+
         ])
         .then(function (data) {
-            db.query('SELECT * FROM employees', (err, data) => {
-                if (err) {
-                    console.log('Welp, that ERROR wasn\'t meant to happen.')
-                } else {
-                    console.table(data);
-                    menu();
+            const first = data.addFirst;
+            const firstName = first.charAt(0).toUpperCase() + (first).slice(1);
+            db.query(
+                'INSERT INTO employees (first_name) VALUES (?)',
+                [firstName],
+                (err, data) => {
+                    if (err) {
+                        console.log('Welp, that ERROR wasn\'t meant to happen.')
+                    } else {
+                        console.log('First name added.')
+                    }
                 }
-
-            })
-        })
-
+            );
+            const last = data.addLast;
+            const lastName = last.charAt(0).toUpperCase() + (last).slice(1);
+            db.query(
+                'UPDATE employees SET last_name = (?) WHERE first_name = (?)',
+                [lastName, firstName],
+                (err, data) => {
+                    if (err) {
+                        console.log('Welp, that ERROR wasn\'t meant to happen.')
+                    } else {
+                        console.log('Last name added.')
+                        menu();
+                    }
+                }
+            );
+        });
 };
 
 function updateEmployeeRole() {
