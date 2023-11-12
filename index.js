@@ -128,7 +128,7 @@ function updateEmployeeRole() {
 
 function viewAllRoles() {
     //prints all content from roles table
-    db.query('SELECT roles.id, roles.title, roles.salary, departments.name AS department FROM roles JOIN departments ON roles.department_id = departments.id ORDER BY roles.id',
+    db.query('SELECT roles.id, roles.title, roles.salary, departments.name AS department FROM roles LEFT JOIN departments ON roles.department_id = departments.id',
         (err, data) => {
             if (err) {
                 console.log('Welp, that ERROR wasn\'t meant to happen.')
