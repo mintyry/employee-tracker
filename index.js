@@ -81,6 +81,16 @@ function viewAllEmployees() {
 };
 
 function addEmployee() {
+    const knowYourRole = [];
+    db.query('SELECT title FROM roles', (err, data) => {
+        if (err) {
+            console.log('Uh-oh, roles are not showing.')
+        } else {
+            data.forEach((roleChoice) => {
+                knowYourRole.push(roleChoice.title);
+            });
+        }
+    });
     inquirer
         .prompt([
             {
@@ -93,12 +103,12 @@ function addEmployee() {
                 name: 'addLast',
                 message: 'What is the new employee\'s last name?'
             },
-            // {
-            //     type: 'list',
-            //     name: 'addER',
-            //     message: 'What is this employee\'s role?',
-            //     choices: 
-            // },
+            {
+                type: 'list',
+                name: 'addER',
+                message: 'What is this employee\'s role?',
+                choices: knowYourRole
+            }
             // {
             //     type: 'list',
             //     name: 'addEM',
@@ -165,7 +175,6 @@ function viewAllRoles() {
 };
 
 function addRole() {
-    //may want to move this; but now, how can i register the user's choice as a dept_id?
     const deptList = [];
     db.query('SELECT name FROM departments', (err, data) => {
         if (err) {
@@ -175,7 +184,7 @@ function addRole() {
                 deptList.push(deptChoice.name);
             });
         }
-    })
+    });
     inquirer
         .prompt([
             {
