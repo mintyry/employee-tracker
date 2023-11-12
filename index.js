@@ -151,7 +151,6 @@ function addRole() {
                 deptList.push(deptChoice.name);
             });
         }
-
     })
     inquirer
         .prompt([
@@ -195,7 +194,6 @@ function addRole() {
                         console.log('Welp, that ERROR wasn\'t meant to happen.');
                     } else {
                         console.log('Role salary added.');
-                        menu();
                     }
                 }
             );
