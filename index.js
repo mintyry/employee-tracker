@@ -145,6 +145,31 @@ function addEmployee() {
                     }
                 }
             );
+            const role = data.addER;
+            db.query('SELECT id FROM roles WHERE title = (?)',
+                [role],
+                (err, data) => {
+                    if (err) {
+                        console.log('omg')
+                    } else {
+                        const roleId = data[0].id;
+                        console.log(roleId);
+                        db.query(
+                            'UPDATE employees SET role_id = (?) WHERE first_name = (?)',
+                            [roleId.toString(), firstName],
+                            (err, data) => {
+                                if (err) {
+                                    console.log('Welp, that ERROR wasn\'t meant to happen.');
+                                } else {
+                                    console.log('Employee role entered.');
+                                    menu();
+                                }
+                            }
+                        );
+                    }
+                });
+
+
         });
 };
 
