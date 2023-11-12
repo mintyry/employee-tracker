@@ -71,7 +71,7 @@ function menu() {
 function viewAllEmployees() {
     db.query('SELECT employees.id, employees.first_name, employees.last_name, roles.title, roles.salary, departments.name AS department, CONCAT(manage_table.first_name, " ",  manage_table.last_name) AS manager FROM employees LEFT JOIN roles ON employees.role_id = roles.id LEFT JOIN departments ON roles.department_id = departments.id LEFT JOIN employees AS manage_table  ON employees.manager_id = manage_table.id;', (err, data) => {
         if (err) {
-            console.log('Welp, that ERROR wasn\'t meant to happen.')
+            console.log('ERROR: Viewing all employees.')
         } else {
             console.table(data);
             menu();
@@ -104,7 +104,6 @@ function addEmployee() {
                 });
                 const noNullMgr = managerList.filter((manager) => manager !== null);
                 const uniqueManagerList = [...new Set(noNullMgr)];
-                console.log(uniqueManagerList);
                 addMgrList(uniqueManagerList);
             }
         });
@@ -220,20 +219,52 @@ function addEmployee() {
 
             });//ends .then()
     }//ends function addMgrList
-};//ends addEmploee()
-
+};//ends addEmployee()
 
 
 function updateEmployeeRole() {
-    db.query('SELECT * FROM departments', (err, data) => {
+    const knowYourRole = [];
+    db.query('SELECT title FROM roles', (err, data) => {
         if (err) {
-            console.log('Welp, that ERROR wasn\'t meant to happen.')
+            console.log('Uh-oh, roles are not showing.')
         } else {
-            console.table(data);
-            menu();
+            data.forEach((roleChoice) => {
+                knowYourRole.push(roleChoice.title);
+            });
         }
+    });//ends role dbquery
 
-    })
+    const empList = [];
+    db.query('SELECT CONCAT(employees.first_name, " ", employees.last_name) AS fullName FROM employees', (err, data) => {
+        if (err) {
+            console.log('Uh-oh, roles are not showing.')
+        } else {
+            data.forEach((empChoice) => {
+                empList.push(empChoice.fullName);
+                askEmpRole(empList);
+            });
+        }
+    });//ends employee list dbquery
+    function askEmpRole(empList) {
+        inquirer
+            .prompt([
+                {
+                    type: 'list',
+                    name: 'pickEmp',
+                    message: 'Whose role would you like to update?',
+                    choices: empList
+                },
+                {
+                    type: 'list',
+                    name: 'pickRole',
+                    message: 'What is this employee\'s new role?',
+                    choices: knowYourRole
+                }
+            ])
+            .then(function (data) {
+                console.log('hello');
+            })
+    }
 };
 
 function viewAllRoles() {
