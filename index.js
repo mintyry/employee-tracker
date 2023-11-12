@@ -128,15 +128,16 @@ function updateEmployeeRole() {
 
 function viewAllRoles() {
     //prints all content from roles table
-    db.query('SELECT * FROM roles', (err, data) => {
-        if (err) {
-            console.log('Welp, that ERROR wasn\'t meant to happen.')
-        } else {
-            console.table(data);
-            menu();
-        }
+    db.query('SELECT roles.id, roles.title, roles.salary, departments.name AS department FROM roles JOIN departments ON roles.department_id = departments.id ORDER BY roles.id',
+        (err, data) => {
+            if (err) {
+                console.log('Welp, that ERROR wasn\'t meant to happen.')
+            } else {
+                console.table(data);
+                menu();
+            }
 
-    })
+        })
 };
 
 function addRole() {
@@ -198,6 +199,7 @@ function addRole() {
                     }
                 }
             );
+            //showing dept id in roles table
             const dept = data.addRD;
             db.query('SELECT id FROM departments WHERE name = (?)',
                 [dept],
@@ -213,8 +215,7 @@ function addRole() {
                                 if (err) {
                                     console.log('Welp, that ERROR wasn\'t meant to happen.');
                                 } else {
-                                    console.log('Role complete.');
-                                    // viewAllRoles();
+                                    console.log('Role successfully entered.');
                                     menu();
                                 }
                             }
