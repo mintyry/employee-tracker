@@ -259,6 +259,7 @@ function addDepartment() {
                     if (err) {
                         console.log('Welp, that ERROR wasn\'t meant to happen.')
                     } else {
+                        console.log('Department successfully added.')
                         menu();
                     }
 
