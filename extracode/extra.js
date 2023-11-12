@@ -47,6 +47,31 @@
 
 //   })
 
+
+
+// const managerList = [];
+
+// db.query('SELECT CONCAT(manage_table.first_name, " ", manage_table.last_name) AS manager FROM employees LEFT JOIN employees as manage_table ON employees.manager_id = manage_table.id;',
+//     (err, data) => {
+//         if (err) {
+//             console.log('Uh-oh, managers are not showing.')
+//         } else {
+//             data.forEach((mgrChoice) => {
+//                 managerList.push(mgrChoice.manager);
+//             });
+//             const noNullMgr = managerList.filter((managers) => {
+//                 return managers !== null
+//             })
+//             const uniqueManagerList = [...new Set(noNullMgr)];
+//             console.log(uniqueManagerList);
+
+//         }
+//     });
+
+
+
+
+
 // SELECT employees.id, employees.first_name AS "first name", employees.last_name AS "last name", roles.title, departments.name AS department, roles.salary, concat(manager.first_name, " ", manager.last_name) AS manager FROM employees LEFT JOIN roles ON employees.role_id = roles.id LEFT JOIN departments ON roles.department_id = departments.id LEFT JOIN employees manager ON manager.id = employees.manager_id;
 
 // inquirer

@@ -102,96 +102,99 @@ function addEmployee() {
                 data.forEach((mgrChoice) => {
                     managerList.push(mgrChoice.manager);
                 });
-                const noNullMgr = managerList.filter((managers) => {
-                    return managers !== null
-                })
+                const noNullMgr = managerList.filter((manager) => manager !== null);
                 const uniqueManagerList = [...new Set(noNullMgr)];
                 console.log(uniqueManagerList);
-
-                inquirer
-                    .prompt([
-                        {
-                            type: 'input',
-                            name: 'addFirst',
-                            message: 'What is the new employee\'s first name?'
-                        },
-                        {
-                            type: 'input',
-                            name: 'addLast',
-                            message: 'What is the new employee\'s last name?'
-                        },
-                        {
-                            type: 'list',
-                            name: 'addER',
-                            message: 'What is this employee\'s role?',
-                            choices: knowYourRole
-                        },
-                        {
-                            type: 'list',
-                            name: 'addEM',
-                            message: 'Who is this employee\'s manager?',
-                            choices: uniqueManagerList
-                        }
-
-                    ])
-                    .then(function (data) {
-                        const first = data.addFirst;
-                        const firstName = first.charAt(0).toUpperCase() + (first).slice(1);
-                        db.query(
-                            'INSERT INTO employees (first_name) VALUES (?)',
-                            [firstName],
-                            (err, data) => {
-                                if (err) {
-                                    console.log('Welp, that ERROR wasn\'t meant to happen.')
-                                } else {
-                                    console.log('First name added.')
-                                }
-                            }
-                        );
-                        const last = data.addLast;
-                        const lastName = last.charAt(0).toUpperCase() + (last).slice(1);
-                        db.query(
-                            'UPDATE employees SET last_name = (?) WHERE first_name = (?)',
-                            [lastName, firstName],
-                            (err, data) => {
-                                if (err) {
-                                    console.log('Welp, that ERROR wasn\'t meant to happen.')
-                                } else {
-                                    console.log('Last name added.')
-                                    menu();
-                                }
-                            }
-                        );
-                        const empRole = data.addER;
-                        db.query('SELECT id FROM roles WHERE title = (?)',
-                            [empRole],
-                            (err, data) => {
-                                if (err) {
-                                    console.log('omg')
-                                } else {
-                                    const roleId = data[0].id;
-                                    console.log(roleId);
-                                    db.query(
-                                        'UPDATE employees SET role_id = (?) WHERE first_name = (?)',
-                                        [roleId.toString(), firstName],
-                                        (err, data) => {
-                                            if (err) {
-                                                console.log('Welp, that ERROR wasn\'t meant to happen.');
-                                            } else {
-                                                console.log('Employee role entered.');
-                                                menu();
-                                            }
-                                        }
-                                    );
-                                }
-                            });
-
-
-                    });
-
+                addMgrList(uniqueManagerList);
             }
         });
+
+    function addMgrList(uniqueManagerList) {
+
+        inquirer
+            .prompt([
+                {
+                    type: 'input',
+                    name: 'addFirst',
+                    message: 'What is the new employee\'s first name?'
+                },
+                {
+                    type: 'input',
+                    name: 'addLast',
+                    message: 'What is the new employee\'s last name?'
+                },
+                {
+                    type: 'list',
+                    name: 'addER',
+                    message: 'What is this employee\'s role?',
+                    choices: knowYourRole
+                },
+                {
+                    type: 'list',
+                    name: 'addEM',
+                    message: 'Who is this employee\'s manager?',
+                    choices: uniqueManagerList
+                }
+
+            ])
+            .then(function (data) {
+                const first = data.addFirst;
+                const firstName = first.charAt(0).toUpperCase() + (first).slice(1);
+                db.query(
+                    'INSERT INTO employees (first_name) VALUES (?)',
+                    [firstName],
+                    (err, data) => {
+                        if (err) {
+                            console.log('Welp, that ERROR wasn\'t meant to happen.')
+                        } else {
+                            console.log('First name added.')
+                        }
+                    }
+                );
+                const last = data.addLast;
+                const lastName = last.charAt(0).toUpperCase() + (last).slice(1);
+                db.query(
+                    'UPDATE employees SET last_name = (?) WHERE first_name = (?)',
+                    [lastName, firstName],
+                    (err, data) => {
+                        if (err) {
+                            console.log('Welp, that ERROR wasn\'t meant to happen.')
+                        } else {
+                            console.log('Last name added.')
+                            menu();
+                        }
+                    }
+                );
+                const empRole = data.addER;
+                db.query('SELECT id FROM roles WHERE title = (?)',
+                    [empRole],
+                    (err, data) => {
+                        if (err) {
+                            console.log('omg')
+                        } else {
+                            const roleId = data[0].id;
+                            console.log(roleId);
+                            db.query(
+                                'UPDATE employees SET role_id = (?) WHERE first_name = (?)',
+                                [roleId.toString(), firstName],
+                                (err, data) => {
+                                    if (err) {
+                                        console.log('Welp, that ERROR wasn\'t meant to happen.');
+                                    } else {
+                                        console.log('Employee role entered.');
+                                        menu();
+                                    }
+                                }
+                            );
+                        }
+                    });
+
+
+            });
+    }
 };
+
+
 
 function updateEmployeeRole() {
     db.query('SELECT * FROM departments', (err, data) => {
