@@ -104,7 +104,7 @@ function viewEmpByDept() {
                 sortEmpByDept();
             } else if (userChoice.empTable === 'View employees by manager') {
                 console.log('Viewing by manager.');
-                //function for sorting table by mgr
+                sortEmpByMgr();
             } else {
                 //if they dont choose either of the above options, it will being back to main menu
                 menu();
@@ -124,6 +124,22 @@ function viewEmpByDept() {
 
                 )
             };//ends sortbyempdept fn
+
+            function sortEmpByMgr() {
+                db.query(
+                    'SELECT employees.manager_id AS id, CONCAT(manage_table.first_name, " ",  manage_table.last_name) AS manager, employees.id AS employee_id, employees.first_name, employees.last_name, roles.title, roles.salary, departments.name AS department FROM employees LEFT JOIN roles ON employees.role_id = roles.id LEFT JOIN departments ON roles.department_id = departments.id LEFT JOIN employees AS manage_table  ON employees.manager_id = manage_table.id ORDER BY id',
+                    (err, data) => {
+                        if (err) {
+                            console.log('Uh-oh, managers are not showing.')
+                        } else {
+                            console.log('this worked.');
+                            console.table(data);
+                            viewEmpByDept();
+                        }
+                    }
+
+                )
+            };//ends sortbyempmanager fn
 
         })//ends .then()
 };//ends viewempbydept fn
