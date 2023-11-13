@@ -1,6 +1,5 @@
 const inquirer = require('inquirer');
 require('console.table');
-// const { viewAllEmployees, addEmployee, updateEmployeeRole, viewAllRoles, addRole, viewAllDepartments, addDepartment, leave } = require('./queries.js')
 
 const mysql = require('mysql2');
 const db = mysql.createConnection(
@@ -33,7 +32,7 @@ const questions = [
             'Log out'
         ]
     }
-]
+];
 
 function menu() {
     inquirer
@@ -72,8 +71,6 @@ function menu() {
         });
 };
 
-
-
 function viewAllEmployees() {
     db.query('SELECT employees.id, employees.first_name, employees.last_name, roles.title, roles.salary, departments.name AS department, CONCAT(manage_table.first_name, " ",  manage_table.last_name) AS manager FROM employees LEFT JOIN roles ON employees.role_id = roles.id LEFT JOIN departments ON roles.department_id = departments.id LEFT JOIN employees AS manage_table  ON employees.manager_id = manage_table.id', (err, data) => {
         if (err) {
@@ -83,9 +80,7 @@ function viewAllEmployees() {
             empMenu();
             // menu(); might want to call this here
         }//ends the else in the cb fn
-
     })//ends dbquery
-
 };
 
 function empMenu() {
@@ -102,7 +97,6 @@ function empMenu() {
                 'Back to main menu'
             ]
         }
-
     ]) //ends prompt
         .then(function empTableMenu(userChoice) {
             if (userChoice.empTable === 'View employees by department') {
@@ -131,7 +125,6 @@ function empMenu() {
                             empMenu();
                         }
                     }
-
                 )
             };//ends sortbyempdept fn
 
@@ -146,53 +139,49 @@ function empMenu() {
                             empMenu();
                         }
                     }
-
                 )
             };//ends sortbyempmanager fn
 
             function deleteEmployee() {
                 const empList = [];
-                db.query('SELECT CONCAT(employees.first_name, " ", employees.last_name) AS fullName FROM employees', (err, data) => {
-                    if (err) {
-                        console.log('Uh-oh, roles are not showing.')
-                    } else {
-                        data.forEach((empChoice) => {
-                            empList.push(empChoice.fullName);
-                        });
-                        empList.push('Back to main menu');
-
-                        inquirer
-                            .prompt([
-                                {
-                                    type: 'list',
-                                    name: 'deleteEmp',
-                                    message: 'Which employee would you like to delete?',
-                                    choices: empList
-                                }
-                            ])
-                            .then(function (data) {
-
-                                if (data.deleteEmp === 'Back to main menu') {
-                                    menu();
-                                } else {
-                                    db.query(
-                                        'DELETE FROM employees WHERE CONCAT(first_name, " ", last_name) = (?)',
-                                        [data.deleteEmp],
-                                        (err, data) => {
-                                            if (err) {
-                                                console.log('Could not delete employee.');
-                                            } else {
-                                                console.log('Future endeavor\'d.');
-                                                empMenu();
+                db.query('SELECT CONCAT(employees.first_name, " ", employees.last_name) AS fullName FROM employees',
+                    (err, data) => {
+                        if (err) {
+                            console.log('Uh-oh, roles are not showing.')
+                        } else {
+                            data.forEach((empChoice) => {
+                                empList.push(empChoice.fullName);
+                            });
+                            empList.push('Back to main menu');
+                            inquirer
+                                .prompt([
+                                    {
+                                        type: 'list',
+                                        name: 'deleteEmp',
+                                        message: 'Which employee would you like to delete?',
+                                        choices: empList
+                                    }
+                                ])
+                                .then(function (data) {
+                                    if (data.deleteEmp === 'Back to main menu') {
+                                        menu();
+                                    } else {
+                                        db.query(
+                                            'DELETE FROM employees WHERE CONCAT(first_name, " ", last_name) = (?)',
+                                            [data.deleteEmp],
+                                            (err, data) => {
+                                                if (err) {
+                                                    console.log('Could not delete employee.');
+                                                } else {
+                                                    console.log('Future endeavor\'d.');
+                                                    empMenu();
+                                                }
                                             }
-                                        }
-                                    );//ends dbquery to delete role
-                                };//ends else
-                            })
-
-                    }//ends deleteEmployee fn
-
-                })//ends .then()
+                                        );//ends dbquery to delete role
+                                    };//ends else
+                                })
+                        }//ends deleteEmployee fn
+                    })//ends .then()
             }
         });//ends employee list top dbquery
 };//ends sortEmp fn
@@ -210,7 +199,6 @@ function addEmployee() {
     });
 
     const managerList = [];
-
     db.query('SELECT CONCAT(employees.first_name, " ", employees.last_name) AS manager FROM employees',
         (err, data) => {
             if (err) {
@@ -226,7 +214,6 @@ function addEmployee() {
         });
 
     function addMgrList(uniqueManagerList) {
-
         inquirer
             .prompt([
                 {
@@ -251,7 +238,6 @@ function addEmployee() {
                     message: 'Who is this employee\'s manager?',
                     choices: uniqueManagerList
                 }
-
             ])
             .then(function (data) {
                 const first = data.addFirst;
@@ -270,7 +256,6 @@ function addEmployee() {
                 const last = data.addLast;
                 const lastName = last.charAt(0).toUpperCase() + (last).slice(1);
                 const fullName = firstName + " " + lastName;
-
                 db.query(
                     'UPDATE employees SET last_name = (?) WHERE first_name = (?)',
                     [lastName, firstName],
@@ -329,12 +314,9 @@ function addEmployee() {
                         }
                     }
                 )
-
-
             });//ends .then()
     }//ends function addMgrList
 };//ends addEmployee()
-
 
 function updateEmployeeRole() {
     const knowYourRole = [];
@@ -483,11 +465,6 @@ function updateEmployeeMgr() {
             }//ends first else block of first cbfn
         }//ends firstcbfn
     )//ends db.query to select employee
-
-
-
-
-
 }//ends updateEmployeeMgr function
 
 function viewAllRoles() {
@@ -500,7 +477,6 @@ function viewAllRoles() {
                 console.table(data);
                 roleMenu();
             }
-
         })
 };
 
@@ -513,7 +489,6 @@ function addRole() {
             data.forEach((deptChoice) => {
                 deptList.push(deptChoice.name);
             });
-
         }
     });
     inquirer
@@ -584,7 +559,6 @@ function addRole() {
                         );
                     }
                 });
-
         })
 };
 
@@ -651,10 +625,7 @@ function roleMenu() {
                         };//ends else
                     })
             }//ends deleteRolefn
-
         })//ends .then()
-
-
 };//ends roleMenu()
 
 function viewAllDepartments() {
@@ -671,7 +642,6 @@ function viewAllDepartments() {
 };
 
 function addDepartment() {
-
     inquirer
         .prompt([{
             type: 'input',
@@ -695,7 +665,6 @@ function addDepartment() {
                     }
                 })
         })
-    //
 };
 
 function deptMenu() {
@@ -711,7 +680,6 @@ function deptMenu() {
                 });
                 listofDept.push('Back to main menu');
             }
-
         })
     inquirer
         .prompt([
@@ -764,7 +732,7 @@ function deptMenu() {
                     })//ends closest .then
             }//ends deleteDept fn
         });//ends .then()
-}
+};
 
 function viewDeptBudget() {
     const budgetDept = [];
@@ -810,8 +778,7 @@ function viewDeptBudget() {
             }
 
         })
-}
-
+};
 
 function leave() {
     console.log('Fine, leave me.');
