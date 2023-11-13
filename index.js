@@ -76,7 +76,32 @@ function viewAllEmployees() {
             console.log('ERROR: Viewing all employees.')
         } else {
             console.table(data);
-            menu();
+            inquirer.prompt([
+                {
+                    type: 'list',
+                    name: 'empTable',
+                    message: 'What would you like to do?',
+                    choices: [
+                        'View employees by department',
+                        'View employees by manager',
+                        'Back to main menu'
+                    ]
+                }
+
+            ]) //ends prompt
+            .then(function empTableMenu(data){
+                if (data.empTable === 'View employees by department') {
+                    console.log('view by dept');
+                    //function for sorting table by dept
+                } else if (data.empTable === 'View employees by manager') {
+                    console.log('view by mgr');
+                    //function for sorting table by mgr
+                } else {
+                    //if they dont choose either of the above options, it will being back to main menu
+                    menu();
+                }
+            })
+            // menu();
         }
 
     })
@@ -302,7 +327,6 @@ function updateEmployeeMgr() {
                 data.forEach((selectedEmp) => {
                     listOfMgrs.push(selectedEmp.fullName)
                 })
-                // console.log(listOfMgrs);
                 console.log('success: list of employees to choose from');
 
                 inquirer
@@ -317,7 +341,6 @@ function updateEmployeeMgr() {
                     .then(function (data) {
                         const pickedEmployee = data.pickEmp;
                         const availableMgrs = [];
-                        console.log(pickedEmployee);
                         db.query(
                             'SELECT CONCAT(employees.first_name, " ", employees.last_name) AS fullName FROM employees WHERE CONCAT(employees.first_name, " ", employees.last_name) != (?)',
                             [pickedEmployee],
@@ -325,11 +348,10 @@ function updateEmployeeMgr() {
                                 if (err) {
                                     console.log('ERROR: No list of employees.');
                                 } else {
-                                    data.forEach((mgrs)=>{
+                                    data.forEach((mgrs) => {
                                         availableMgrs.push(mgrs.fullName);
                                     })
-                                    availableMgrs.push('No Manager')
-                                    console.log(availableMgrs);
+                                    availableMgrs.push('No Manager');
                                     inquirer
                                         .prompt([
                                             {
@@ -360,7 +382,8 @@ function updateEmployeeMgr() {
                                                                     menu();
                                                                 }
                                                             })
-                                                    }}
+                                                    }
+                                                }
                                             )
                                         })
                                 }
