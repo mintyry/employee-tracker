@@ -445,7 +445,7 @@ function viewAllRoles() {
                 console.log('Welp, that ERROR wasn\'t meant to happen.')
             } else {
                 console.table(data);
-                menu();
+                roleMenu();
             }
 
         })
@@ -535,6 +535,77 @@ function addRole() {
         })
 };
 
+function roleMenu() {
+    const knowYourRole = [];
+    db.query('SELECT title FROM roles', (err, data) => {
+        if (err) {
+            console.log('Uh-oh, roles are not showing.')
+        } else {
+            data.forEach((roleChoice) => {
+                knowYourRole.push(roleChoice.title);
+            });
+            knowYourRole.push('Back to menu');
+        }
+    });//ends dbquery
+    inquirer
+        .prompt([
+            {
+                type: 'list',
+                name: 'roleQ',
+                message: 'Anything else?',
+                choices: [
+                    'Delete role',
+                    'View all roles',
+                    'Back to main menu'
+                ]
+            }
+        ])
+        .then(function (userChoice) {
+            if (userChoice.roleQ === 'Delete role') {
+                console.log('Role deleted.');
+                console.log(knowYourRole);
+                deleteRole();
+            } else if (userChoice.roleQ === 'View all roles') {
+                viewAllRoles();
+            } else {
+                menu();
+            }
+            function deleteRole() {
+                inquirer
+                    .prompt([
+                        {
+                            type: 'list',
+                            name: 'deleteRole',
+                            message: 'Which role would you like to delete?',
+                            choices: knowYourRole
+                        }
+                    ])
+                    .then(function (data) {
+
+                        if (data.deleteRole === 'Back to menu') {
+                            menu();
+                        } else {
+                            db.query(
+                                'DELETE FROM roles WHERE title = (?)',
+                                [data.deleteRole],
+                                (err, data) => {
+                                    if (err) {
+                                        console.log('Could not delete role.');
+                                    } else {
+                                        console.log('Role deleted.');
+                                        roleMenu();
+                                    }
+                                }
+                            );//ends dbquery to delete role
+                        };//ends else
+                    })
+            }//ends deleteRolefn
+
+        })//ends .then()
+
+
+};//ends roleMenu()
+
 function viewAllDepartments() {
     //prints all content from departments table
     db.query('SELECT * FROM departments', (err, data) => {
@@ -587,6 +658,7 @@ function deptMenu() {
                 data.forEach((whichDeptDelete) => {
                     listofDept.push(whichDeptDelete.name);
                 });
+                listofDept.push('Back to menu');
             }
 
         })
@@ -605,8 +677,6 @@ function deptMenu() {
         ])
         .then(function (userChoice) {
             if (userChoice.deptQ === 'Delete department') {
-                console.log('DepartmentDeleted');
-                console.log(listofDept);
                 deleteDept();
             } else if (userChoice.deptQ === 'View all departments') {
                 viewAllDepartments();
