@@ -571,12 +571,47 @@ function addDepartment() {
                         console.log('Department successfully added.')
                         menu();
                     }
-
                 })
         })
-
     //
 };
+
+function deptMenu() {
+    inquirer
+        .prompt([
+            {
+                type: 'list',
+                name: 'deptQ',
+                message: 'Anything else?',
+                choices: [
+                    'Delete department',
+                    'Back to main menu'
+                ]
+            }
+        ])
+        .then(function (userChoice) {
+            if (userChoice.deptQ === 'Delete department') {
+                console.log('DepartmentDeleted');
+                // function to delete
+            } else {
+                menu();
+            }
+            function deleteDept() {
+                inquirer
+                    .prompt([
+                        {
+                            type: 'list',
+                            name: 'deleteDept',
+                            message: 'Which department would you like to delete?',
+                            choices: [/*make variable for list of depts*/]
+                        }
+                    ])
+                    .then(function (userChoice) {
+                        //dbquery to delete dept
+                     })
+            }//ends deleteDept fn
+        });//ends .then()
+}
 
 function leave() {
     console.log('Fine, leave me.');
