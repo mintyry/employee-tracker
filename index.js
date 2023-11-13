@@ -76,7 +76,7 @@ function viewAllEmployees() {
             console.log('ERROR: Viewing all employees.')
         } else {
             console.table(data);
-            viewEmpByDept();
+            sortEmp();
             // menu(); might want to call this here
         }//ends the else in the cb fn
 
@@ -84,12 +84,12 @@ function viewAllEmployees() {
 
 };
 
-function viewEmpByDept() {
+function sortEmp() {
     inquirer.prompt([
         {
             type: 'list',
             name: 'empTable',
-            message: 'What would you like to do?',
+            message: 'Anything else?',
             choices: [
                 'View employees by department',
                 'View employees by manager',
@@ -118,7 +118,7 @@ function viewEmpByDept() {
                         } else {
                             console.log('this worked.');
                             console.table(data);
-                            viewEmpByDept();
+                            sortEmp();
                         }
                     }
 
@@ -134,7 +134,7 @@ function viewEmpByDept() {
                         } else {
                             console.log('this worked.');
                             console.table(data);
-                            viewEmpByDept();
+                            sortEmp();
                         }
                     }
 
@@ -142,7 +142,7 @@ function viewEmpByDept() {
             };//ends sortbyempmanager fn
 
         })//ends .then()
-};//ends viewempbydept fn
+};//ends sortEmp fn
 
 function addEmployee() {
     const knowYourRole = [];
