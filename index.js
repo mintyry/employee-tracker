@@ -29,6 +29,7 @@ const questions = [
             'Add role',
             'View all departments',
             'Add department',
+            'View budget by department',
             'Log out'
         ]
     }
@@ -61,6 +62,9 @@ function menu() {
 
             } else if (data.menu === 'Add department') {
                 addDepartment();
+
+            } else if (data.menu === 'View budget by department') {
+                viewDeptBudget();
 
             } else {
                 leave();
@@ -761,6 +765,53 @@ function deptMenu() {
             }//ends deleteDept fn
         });//ends .then()
 }
+
+function viewDeptBudget() {
+    const budgetDept = [];
+    db.query(
+        'SELECT name FROM departments',
+        (err, data) => {
+            if (err) {
+                console.log('Welp, that ERROR wasn\'t meant to happen.')
+            } else {
+                data.forEach((whichDeptDelete) => {
+                    budgetDept.push(whichDeptDelete.name);
+                });
+                budgetDept.push('Back to main menu');
+
+                inquirer
+                    .prompt([
+                        {
+                            type: 'list',
+                            name: 'deptBud',
+                            message: 'Please select a department below to view its current total utilized budget.',
+                            choices: budgetDept
+                        }
+                    ])
+                    .then(function (selectedDept) {
+                        if (selectedDept.deptBud === 'Back to main menu') {
+                            menu();
+                        } else {
+                            db.query(
+                                'SELECT departments.id, departments.name AS department, total_salary, COUNT(employees.id) AS total_employees FROM employees LEFT JOIN roles ON employees.role_id = roles.id LEFT JOIN departments ON roles.department_id = departments.id LEFT JOIN employees AS manage_table ON employees.manager_id = manage_table.id JOIN (SELECT roles.department_id, SUM(roles.salary) AS total_salary FROM roles GROUP BY roles.department_id) AS department_salary ON departments.id = department_salary.department_id WHERE departments.name = (?) GROUP BY departments.id, departments.name, total_salary ORDER BY department',
+                                [selectedDept.deptBud],
+                                (err, data) => {
+                                    if (err) {
+                                        console.log('Out of moolah for that one.');
+                                    } else {
+                                        console.log('Presenting total utilized budget for selected department.');
+                                        console.table(data);
+                                        menu();
+                                    }
+                                }
+                            );//ends dbquery to show total salary
+                        } //ends else
+                    })//ends .then()
+            }
+
+        })
+}
+
 
 function leave() {
     console.log('Fine, leave me.');
