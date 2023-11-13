@@ -92,7 +92,7 @@ function addEmployee() {
 
     const managerList = [];
 
-    db.query('SELECT CONCAT(manage_table.first_name, " ", manage_table.last_name) AS manager FROM employees LEFT JOIN employees as manage_table ON employees.manager_id = manage_table.id;',
+    db.query('SELECT CONCAT(employees.first_name, " ", employees.last_name) AS manager FROM employees',
         (err, data) => {
             if (err) {
                 console.log('Uh-oh, managers are not showing.')
