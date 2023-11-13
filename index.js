@@ -544,7 +544,7 @@ function roleMenu() {
             data.forEach((roleChoice) => {
                 knowYourRole.push(roleChoice.title);
             });
-            knowYourRole.push('Back to menu');
+            knowYourRole.push('Back to main menu');
         }
     });//ends dbquery
     inquirer
@@ -582,7 +582,7 @@ function roleMenu() {
                     ])
                     .then(function (data) {
 
-                        if (data.deleteRole === 'Back to menu') {
+                        if (data.deleteRole === 'Back to main menu') {
                             menu();
                         } else {
                             db.query(
@@ -658,7 +658,7 @@ function deptMenu() {
                 data.forEach((whichDeptDelete) => {
                     listofDept.push(whichDeptDelete.name);
                 });
-                listofDept.push('Back to menu');
+                listofDept.push('Back to main menu');
             }
 
         })
@@ -694,19 +694,23 @@ function deptMenu() {
                         }
                     ])
                     .then(function (data) {
-                        db.query(
-                            'DELETE FROM departments WHERE name = (?)',
-                            [data.deleteDept],
-                            (err, data) => {
-                                if (err) {
-                                    console.log('Could not delete department.');
-                                } else {
-                                    console.log('Department deleted.');
-                                    deptMenu();
+                        if (data.deleteDept === 'Back to main menu') {
+                            menu();
+                        } else {
+                            db.query(
+                                'DELETE FROM departments WHERE name = (?)',
+                                [data.deleteDept],
+                                (err, data) => {
+                                    if (err) {
+                                        console.log('Could not delete department.');
+                                    } else {
+                                        console.log('Department deleted.');
+                                        deptMenu();
+                                    }
                                 }
-                            }
-                        );//ends dbquery to delete dept
-                    })
+                            );//ends dbquery to delete dept
+                        }
+                    })//ends closest .then
             }//ends deleteDept fn
         });//ends .then()
 }
