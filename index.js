@@ -100,8 +100,8 @@ function addEmployee() {
                 data.forEach((mgrChoice) => {
                     managerList.push(mgrChoice.manager);
                 });
-                const noNullMgr = managerList.filter((manager) => manager !== null);
-                const uniqueManagerList = [...new Set(noNullMgr)];
+                const noNullMgr = managerList.filter((manager) => manager );
+                const uniqueManagerList = [...new Set(noNullMgr), "No Manager"];
                 addMgrList(uniqueManagerList);
             }
         });
@@ -192,10 +192,12 @@ function addEmployee() {
                         if (err) {
                             console.log('Welp, that ERROR wasn\'t meant to happen.');
                         } else {
-                            const mgrId = data[0].id;
+                            //optional chaining; if !== data[0], prevents type error, and carries undefined
+                            const mgrId = data[0]?.id;
                             db.query(
                                 'UPDATE employees SET manager_id = (?) WHERE CONCAT(employees.first_name, " ", employees.last_name) = (?)',
-                                [mgrId.toString(), fullName],
+                                //short circuit to pass in null instead of undefined when mgrId is undefined (because of user choosing no Manager for the newly added employee)
+                                [mgrId?.toString() || null, fullName],
                                 (err, data) => {
                                     if (err) {
                                         console.log('Welp, that ERROR wasn\'t meant to happen.');
