@@ -1,5 +1,3 @@
-//todo: dept_id for Add Role,
-
 const inquirer = require('inquirer');
 require('console.table');
 // const { viewAllEmployees, addEmployee, updateEmployeeRole, viewAllRoles, addRole, viewAllDepartments, addDepartment, leave } = require('./queries.js')
@@ -153,7 +151,7 @@ function addEmployee() {
                 const last = data.addLast;
                 const lastName = last.charAt(0).toUpperCase() + (last).slice(1);
                 const fullName = firstName + " " + lastName;
-                console.log(fullName);
+            
                 db.query(
                     'UPDATE employees SET last_name = (?) WHERE first_name = (?)',
                     [lastName, firstName],
@@ -162,7 +160,6 @@ function addEmployee() {
                             console.log('Welp, that ERROR wasn\'t meant to happen.')
                         } else {
                             console.log('Last name added.')
-                            menu();
                         }
                     }
                 );
@@ -195,10 +192,7 @@ function addEmployee() {
                         if (err) {
                             console.log('Welp, that ERROR wasn\'t meant to happen.');
                         } else {
-                            console.log(data);
                             const mgrId = data[0].id;
-                            console.log(mgrId);
-                            console.log(inputMgrId);
                             db.query(
                                 'UPDATE employees SET manager_id = (?) WHERE CONCAT(employees.first_name, " ", employees.last_name) = (?)',
                                 [mgrId.toString(), fullName],
@@ -206,7 +200,6 @@ function addEmployee() {
                                     if (err) {
                                         console.log('Welp, that ERROR wasn\'t meant to happen.');
                                     } else {
-                                        console.log(data);
                                         console.log('Employee successfully added.');
                                         menu();
                                     }
@@ -242,11 +235,10 @@ function updateEmployeeRole() {
             data.forEach((empChoice) => {
                 empList.push(empChoice.fullName);
             });
-            askEmpRole(empList);
-            // console.log(empList);
+            updateEmpQuery(empList);
         }
     });//ends employee list dbquery
-    function askEmpRole(empList) {
+    function updateEmpQuery(empList) {
         inquirer
             .prompt([
                 {
@@ -263,7 +255,32 @@ function updateEmployeeRole() {
                 }
             ])
             .then(function (data) {
-                console.log('hello');
+                const chosenEmp = data.pickEmp;
+                const newRole = data.pickRole;
+                db.query(
+                    'SELECT id FROM roles WHERE title = (?)',
+                    [newRole],
+                    (err, data) => {
+                        if (err) {
+                            console.log('ERROR: role_id not updated.')
+                        } else {
+                            console.log('role_id selected.')
+                            const newRoleId = data[0].id;
+                            db.query(
+                                'UPDATE employees SET role_id = (?) WHERE CONCAT(employees.first_name, " ", employees.last_name) = (?)',
+                                [newRoleId, chosenEmp],
+                                (err, data) => {
+                                    if (err) {
+                                        console.log('Welp, that ERROR wasn\'t meant to happen.')
+                                    } else {
+                                        console.log('Role title added.');
+                                        menu();
+                                    }
+                                }
+                            );
+                        }
+                    }
+                );
             })
     }
 };
@@ -291,7 +308,7 @@ function addRole() {
             data.forEach((deptChoice) => {
                 deptList.push(deptChoice.name);
             });
-            // console.log(deptList);
+        
         }
     });
     inquirer
@@ -405,7 +422,6 @@ function addDepartment() {
 
                 })
         })
-    // console.log(`I want to add ${data.addD}`)
 
     //
 };

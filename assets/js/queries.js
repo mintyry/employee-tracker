@@ -1,3 +1,16 @@
+const mysql = require('mysql2');
+const db = mysql.createConnection(
+    {
+        host: 'localhost',
+        database: 'manageco',
+        user: 'root',
+        password: ''
+    },
+    console.log('Thanks for visiting my database.\nIt\'s nice to finally have some company around here.\nLet\'s get to work, shall we?')
+
+);
+
+
 function viewAllEmployees() {
     db.query('SELECT employees.id, employees.first_name, employees.last_name, roles.title, roles.salary, departments.name AS department, CONCAT(manage_table.first_name, " ",  manage_table.last_name) AS manager FROM employees LEFT JOIN roles ON employees.role_id = roles.id LEFT JOIN departments ON roles.department_id = departments.id LEFT JOIN employees AS manage_table  ON employees.manager_id = manage_table.id;', (err, data) => {
         if (err) {
