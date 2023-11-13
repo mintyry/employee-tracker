@@ -241,8 +241,9 @@ function updateEmployeeRole() {
         } else {
             data.forEach((empChoice) => {
                 empList.push(empChoice.fullName);
-                askEmpRole(empList);
             });
+            askEmpRole(empList);
+            // console.log(empList);
         }
     });//ends employee list dbquery
     function askEmpRole(empList) {
@@ -290,6 +291,7 @@ function addRole() {
             data.forEach((deptChoice) => {
                 deptList.push(deptChoice.name);
             });
+            // console.log(deptList);
         }
     });
     inquirer
