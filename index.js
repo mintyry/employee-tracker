@@ -542,7 +542,7 @@ function viewAllDepartments() {
             console.log('Welp, that ERROR wasn\'t meant to happen.')
         } else {
             console.table(data);
-            menu();
+            deptMenu();
         }
 
     })
@@ -577,6 +577,19 @@ function addDepartment() {
 };
 
 function deptMenu() {
+    const listofDept = [];
+    db.query(
+        'SELECT name FROM departments',
+        (err, data) => {
+            if (err) {
+                console.log('Welp, that ERROR wasn\'t meant to happen.')
+            } else {
+                data.forEach((whichDeptDelete) => {
+                    listofDept.push(whichDeptDelete.name);
+                });
+            }
+
+        })
     inquirer
         .prompt([
             {
@@ -585,6 +598,7 @@ function deptMenu() {
                 message: 'Anything else?',
                 choices: [
                     'Delete department',
+                    'View all departments',
                     'Back to main menu'
                 ]
             }
@@ -592,7 +606,10 @@ function deptMenu() {
         .then(function (userChoice) {
             if (userChoice.deptQ === 'Delete department') {
                 console.log('DepartmentDeleted');
-                // function to delete
+                console.log(listofDept);
+                deleteDept();
+            } else if (userChoice.deptQ === 'View all departments') {
+                viewAllDepartments();
             } else {
                 menu();
             }
@@ -603,12 +620,23 @@ function deptMenu() {
                             type: 'list',
                             name: 'deleteDept',
                             message: 'Which department would you like to delete?',
-                            choices: [/*make variable for list of depts*/]
+                            choices: listofDept
                         }
                     ])
-                    .then(function (userChoice) {
-                        //dbquery to delete dept
-                     })
+                    .then(function (data) {
+                        db.query(
+                            'DELETE FROM departments WHERE name = (?)',
+                            [data.deleteDept],
+                            (err, data) => {
+                                if (err) {
+                                    console.log('Could not delete department.');
+                                } else {
+                                    console.log('Department deleted.');
+                                    deptMenu();
+                                }
+                            }
+                        );//ends dbquery to delete dept
+                    })
             }//ends deleteDept fn
         });//ends .then()
 }
