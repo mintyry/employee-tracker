@@ -1,6 +1,7 @@
+//requiring inquirer module and console.table to ask questions and show table
 const inquirer = require('inquirer');
 require('console.table');
-
+//requiring mysql and establishing connection to js via db variable
 const mysql = require('mysql2');
 const db = mysql.createConnection(
     {
@@ -10,9 +11,9 @@ const db = mysql.createConnection(
         password: ''
     },
     console.log('Thanks for visiting my database.\nIt\'s nice to finally have some company around here.\nLet\'s get to work, shall we?')
-
 );
 
+//initial question and choices for the main menu
 const questions = [
     //initial menu question
     {
@@ -34,55 +35,54 @@ const questions = [
     }
 ];
 
+//initial choices; calling functions depending what choice is made
 function menu() {
     inquirer
         .prompt(questions)
         .then(function (data) {
             if (data.menu === 'View all employees') {
                 viewAllEmployees();
-
             } else if (data.menu === 'Add employee') {
                 addEmployee();
-
             } else if (data.menu === 'Update employee role') {
                 updateEmployeeRole();
-
             } else if (data.menu === 'Update employee\'s manager') {
                 updateEmployeeMgr();
-
             } else if (data.menu === 'View all roles') {
                 viewAllRoles();
-
             } else if (data.menu === 'Add role') {
                 addRole();
-
             } else if (data.menu === 'View all departments') {
                 viewAllDepartments();
-
             } else if (data.menu === 'Add department') {
                 addDepartment();
-
             } else if (data.menu === 'View budget by department') {
                 viewDeptBudget();
-
             } else {
                 leave();
             }
         });
 };
 
+//views all employees table
 function viewAllEmployees() {
-    db.query('SELECT employees.id, employees.first_name, employees.last_name, roles.title, roles.salary, departments.name AS department, CONCAT(manage_table.first_name, " ",  manage_table.last_name) AS manager FROM employees LEFT JOIN roles ON employees.role_id = roles.id LEFT JOIN departments ON roles.department_id = departments.id LEFT JOIN employees AS manage_table  ON employees.manager_id = manage_table.id', (err, data) => {
-        if (err) {
-            console.log('ERROR: Viewing all employees.')
-        } else {
-            console.table(data);
-            empMenu();
-            // menu(); might want to call this here
-        }//ends the else in the cb fn
-    })//ends dbquery
+
+    //prints specific columns in order to have a master employee table that shows data from roles and departments as well
+    db.query(
+        'SELECT employees.id, employees.first_name, employees.last_name, roles.title, roles.salary, departments.name AS department, CONCAT(manage_table.first_name, " ",  manage_table.last_name) AS manager FROM employees LEFT JOIN roles ON employees.role_id = roles.id LEFT JOIN departments ON roles.department_id = departments.id LEFT JOIN employees AS manage_table  ON employees.manager_id = manage_table.id',
+        (err, data) => {
+            if (err) {
+                console.log('ERROR: Viewing all employees.')
+            } else {
+                console.table(data);
+                //presents main menu question and choices after printing table
+                empMenu();
+                // menu(); might want to call this here
+            }//ends the else in the cb fn
+        })//ends dbquery
 };
 
+//presents a sub menu once inside the View All Employees section
 function empMenu() {
     inquirer.prompt([
         {
@@ -114,6 +114,7 @@ function empMenu() {
                 //if they dont choose either of the above options, it will being back to main menu
                 menu();
             }
+            //sorts employees by department
             function sortEmpByDept() {
                 db.query(
                     'SELECT departments.id, departments.name AS department, employees.id AS employee_id, employees.first_name, employees.last_name, roles.title, roles.salary, CONCAT(manage_table.first_name, " ",  manage_table.last_name) AS manager FROM employees LEFT JOIN roles ON employees.role_id = roles.id LEFT JOIN departments ON roles.department_id = departments.id LEFT JOIN employees AS manage_table  ON employees.manager_id = manage_table.id ORDER BY department',
@@ -128,6 +129,7 @@ function empMenu() {
                 )
             };//ends sortbyempdept fn
 
+             //sorts employees by their manager
             function sortEmpByMgr() {
                 db.query(
                     'SELECT employees.manager_id AS id, CONCAT(manage_table.first_name, " ",  manage_table.last_name) AS manager, employees.id AS employee_id, employees.first_name, employees.last_name, roles.title, roles.salary, departments.name AS department FROM employees LEFT JOIN roles ON employees.role_id = roles.id LEFT JOIN departments ON roles.department_id = departments.id LEFT JOIN employees AS manage_table  ON employees.manager_id = manage_table.id ORDER BY id',
@@ -142,7 +144,9 @@ function empMenu() {
                 )
             };//ends sortbyempmanager fn
 
+            //delete employee function
             function deleteEmployee() {
+                //makes dynamic list of employees, so if user adds an employee, they can now delete them too
                 const empList = [];
                 db.query('SELECT CONCAT(employees.first_name, " ", employees.last_name) AS fullName FROM employees',
                     (err, data) => {
@@ -152,6 +156,7 @@ function empMenu() {
                             data.forEach((empChoice) => {
                                 empList.push(empChoice.fullName);
                             });
+                            //adding option to go back to main menu
                             empList.push('Back to main menu');
                             inquirer
                                 .prompt([
@@ -163,10 +168,12 @@ function empMenu() {
                                     }
                                 ])
                                 .then(function (data) {
+                                    //if user is at delete selection page and realizes they don't want to delete anyone, they can choose to go back to the main menu instead.
                                     if (data.deleteEmp === 'Back to main menu') {
                                         menu();
                                     } else {
                                         db.query(
+                                            //deletes from employees table where first and last name combined matches the name the user selected
                                             'DELETE FROM employees WHERE CONCAT(first_name, " ", last_name) = (?)',
                                             [data.deleteEmp],
                                             (err, data) => {
