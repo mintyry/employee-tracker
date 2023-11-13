@@ -637,7 +637,6 @@ function viewAllDepartments() {
             console.table(data);
             deptMenu();
         }
-
     })
 };
 
