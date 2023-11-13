@@ -71,41 +71,62 @@ function menu() {
 
 
 function viewAllEmployees() {
-    db.query('SELECT employees.id, employees.first_name, employees.last_name, roles.title, roles.salary, departments.name AS department, CONCAT(manage_table.first_name, " ",  manage_table.last_name) AS manager FROM employees LEFT JOIN roles ON employees.role_id = roles.id LEFT JOIN departments ON roles.department_id = departments.id LEFT JOIN employees AS manage_table  ON employees.manager_id = manage_table.id;', (err, data) => {
+    db.query('SELECT employees.id, employees.first_name, employees.last_name, roles.title, roles.salary, departments.name AS department, CONCAT(manage_table.first_name, " ",  manage_table.last_name) AS manager FROM employees LEFT JOIN roles ON employees.role_id = roles.id LEFT JOIN departments ON roles.department_id = departments.id LEFT JOIN employees AS manage_table  ON employees.manager_id = manage_table.id', (err, data) => {
         if (err) {
             console.log('ERROR: Viewing all employees.')
         } else {
             console.table(data);
-            inquirer.prompt([
-                {
-                    type: 'list',
-                    name: 'empTable',
-                    message: 'What would you like to do?',
-                    choices: [
-                        'View employees by department',
-                        'View employees by manager',
-                        'Back to main menu'
-                    ]
-                }
+            viewEmpByDept();
+            // menu(); might want to call this here
+        }//ends the else in the cb fn
 
-            ]) //ends prompt
-            .then(function empTableMenu(data){
-                if (data.empTable === 'View employees by department') {
-                    console.log('view by dept');
-                    //function for sorting table by dept
-                } else if (data.empTable === 'View employees by manager') {
-                    console.log('view by mgr');
-                    //function for sorting table by mgr
-                } else {
-                    //if they dont choose either of the above options, it will being back to main menu
-                    menu();
-                }
-            })
-            // menu();
+    })//ends dbquery
+
+};
+
+function viewEmpByDept() {
+    inquirer.prompt([
+        {
+            type: 'list',
+            name: 'empTable',
+            message: 'What would you like to do?',
+            choices: [
+                'View employees by department',
+                'View employees by manager',
+                'Back to main menu'
+            ]
         }
 
-    })
-};
+    ]) //ends prompt
+        .then(function empTableMenu(userChoice) {
+            if (userChoice.empTable === 'View employees by department') {
+                console.log('Viewing by dept.');
+                sortEmpByDept();
+            } else if (userChoice.empTable === 'View employees by manager') {
+                console.log('Viewing by manager.');
+                //function for sorting table by mgr
+            } else {
+                //if they dont choose either of the above options, it will being back to main menu
+                menu();
+            }
+            function sortEmpByDept() {
+                db.query(
+                    'SELECT departments.id, departments.name AS department, employees.id AS employee_id, employees.first_name, employees.last_name, roles.title, roles.salary, CONCAT(manage_table.first_name, " ",  manage_table.last_name) AS manager FROM employees LEFT JOIN roles ON employees.role_id = roles.id LEFT JOIN departments ON roles.department_id = departments.id LEFT JOIN employees AS manage_table  ON employees.manager_id = manage_table.id ORDER BY department',
+                    (err, data) => {
+                        if (err) {
+                            console.log('Uh-oh, managers are not showing.')
+                        } else {
+                            console.log('this worked.');
+                            console.table(data);
+                            viewEmpByDept();
+                        }
+                    }
+
+                )
+            };//ends sortbyempdept fn
+
+        })//ends .then()
+};//ends viewempbydept fn
 
 function addEmployee() {
     const knowYourRole = [];
