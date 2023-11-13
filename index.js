@@ -304,6 +304,7 @@ function updateEmployeeMgr() {
                 })
                 // console.log(listOfMgrs);
                 console.log('success: list of employees to choose from');
+
                 inquirer
                     .prompt([
                         {
@@ -311,19 +312,63 @@ function updateEmployeeMgr() {
                             name: 'pickEmp',
                             message: 'Which employee would you like to update?',
                             choices: listOfMgrs
-                        },
-                        {
-                            type: 'list',
-                            name: 'pickMgr',
-                            message: 'Who is this employee\'s new manager?',
-                            choices: knowYourRole
                         }
                     ])//ends prompt questions
                     .then(function (data) {
-                        console.log('We will dbquery to update the master table with the chosen manager where concat first and last = data.pickEmp');
+                        const pickedEmployee = data.pickEmp;
+                        const availableMgrs = [];
+                        console.log(pickedEmployee);
+                        db.query(
+                            'SELECT CONCAT(employees.first_name, " ", employees.last_name) AS fullName FROM employees WHERE CONCAT(employees.first_name, " ", employees.last_name) != (?)',
+                            [pickedEmployee],
+                            (err, data) => {
+                                if (err) {
+                                    console.log('ERROR: No list of employees.');
+                                } else {
+                                    data.forEach((mgrs)=>{
+                                        availableMgrs.push(mgrs.fullName);
+                                    })
+                                    availableMgrs.push('No Manager')
+                                    console.log(availableMgrs);
+                                    inquirer
+                                        .prompt([
+                                            {
+                                                type: 'list',
+                                                name: 'pickMgr',
+                                                message: 'Who is this employee\'s new manager?',
+                                                choices: availableMgrs
+                                            }
+                                        ])
+                                        .then(function (data) {
+                                            const newManager = data.pickMgr;
+                                            db.query(
+                                                'SELECT id FROM employees WHERE CONCAT(employees.first_name, " ", employees.last_name) = (?)',
+                                                [newManager],
+                                                (err, data) => {
+                                                    if (err) {
+                                                        console.log('ERROR: No list of employees.');
+                                                    } else {
+                                                        const newMgrId = data[0]?.id;
+                                                        db.query(
+                                                            'UPDATE employees SET manager_id = (?) WHERE CONCAT(employees.first_name, " ", employees.last_name) = (?)',
+                                                            [newMgrId?.toString() || null, pickedEmployee],
+                                                            (err, data) => {
+                                                                if (err) {
+                                                                    console.log('Welp, that ERROR wasn\'t meant to happen.');
+                                                                } else {
+                                                                    console.log('Employee\'s manager was successfully updated.');
+                                                                    menu();
+                                                                }
+                                                            })
+                                                    }}
+                                            )
+                                        })
+                                }
+                            }
+                        )
                     })//ends prompt's.then()
-            }
-        }//ends cbfn
+            }//ends first else block of first cbfn
+        }//ends firstcbfn
     )//ends db.query to select employee
 
 
