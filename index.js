@@ -24,6 +24,7 @@ const questions = [
             'View all employees',
             'Add employee',
             'Update employee role',
+            'Update employee\'s manager',
             'View all roles',
             'Add role',
             'View all departments',
@@ -45,6 +46,9 @@ function menu() {
 
             } else if (data.menu === 'Update employee role') {
                 updateEmployeeRole();
+
+            } else if (data.menu === 'Update employee\'s manager') {
+                updateEmployeeMgr();
 
             } else if (data.menu === 'View all roles') {
                 viewAllRoles();
@@ -100,7 +104,7 @@ function addEmployee() {
                 data.forEach((mgrChoice) => {
                     managerList.push(mgrChoice.manager);
                 });
-                const noNullMgr = managerList.filter((manager) => manager );
+                const noNullMgr = managerList.filter((manager) => manager);
                 const uniqueManagerList = [...new Set(noNullMgr), "No Manager"];
                 addMgrList(uniqueManagerList);
             }
@@ -151,7 +155,7 @@ function addEmployee() {
                 const last = data.addLast;
                 const lastName = last.charAt(0).toUpperCase() + (last).slice(1);
                 const fullName = firstName + " " + lastName;
-            
+
                 db.query(
                     'UPDATE employees SET last_name = (?) WHERE first_name = (?)',
                     [lastName, firstName],
@@ -287,6 +291,47 @@ function updateEmployeeRole() {
     }
 };
 
+function updateEmployeeMgr() {
+    const listOfMgrs = []
+    db.query(
+        'SELECT CONCAT(employees.first_name, " ", employees.last_name) AS fullName FROM employees',
+        (err, data) => {
+            if (err) {
+                console.log('ERROR: No list of employees.');
+            } else {
+                data.forEach((selectedEmp) => {
+                    listOfMgrs.push(selectedEmp.fullName)
+                })
+                // console.log(listOfMgrs);
+                console.log('success: list of employees to choose from');
+                inquirer
+                    .prompt([
+                        {
+                            type: 'list',
+                            name: 'pickEmp',
+                            message: 'Which employee would you like to update?',
+                            choices: listOfMgrs
+                        }
+                        // {
+                        //     type: 'list',
+                        //     name: 'pickMgr',
+                        //     message: 'Who is this employee\'s new manager?',
+                        //     choices: knowYourRole
+                        // }
+                    ])//ends prompt questions
+                    .then(function (data) {
+                        console.log(listOfMgrs);
+                    })//ends prompt's.then()
+            }
+        }//ends cbfn
+    )//ends db.query to select employee
+
+
+
+
+
+}//ends updateEmployeeMgr function
+
 function viewAllRoles() {
     //prints all content from roles table
     db.query('SELECT roles.id, roles.title, roles.salary, departments.name AS department FROM roles LEFT JOIN departments ON roles.department_id = departments.id',
@@ -310,7 +355,7 @@ function addRole() {
             data.forEach((deptChoice) => {
                 deptList.push(deptChoice.name);
             });
-        
+
         }
     });
     inquirer
