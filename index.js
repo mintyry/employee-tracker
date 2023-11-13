@@ -76,7 +76,7 @@ function viewAllEmployees() {
             console.log('ERROR: Viewing all employees.')
         } else {
             console.table(data);
-            sortEmp();
+            empMenu();
             // menu(); might want to call this here
         }//ends the else in the cb fn
 
@@ -84,7 +84,7 @@ function viewAllEmployees() {
 
 };
 
-function sortEmp() {
+function empMenu() {
     inquirer.prompt([
         {
             type: 'list',
@@ -93,6 +93,8 @@ function sortEmp() {
             choices: [
                 'View employees by department',
                 'View employees by manager',
+                'Delete employee',
+                'View all employees',
                 'Back to main menu'
             ]
         }
@@ -105,6 +107,11 @@ function sortEmp() {
             } else if (userChoice.empTable === 'View employees by manager') {
                 console.log('Viewing by manager.');
                 sortEmpByMgr();
+            } else if (userChoice.empTable === 'Delete employee') {
+                console.log('Deleting employee.');
+                deleteEmployee();
+            } else if (userChoice.empTable === 'View all employees') {
+                viewAllEmployees();
             } else {
                 //if they dont choose either of the above options, it will being back to main menu
                 menu();
@@ -116,9 +123,8 @@ function sortEmp() {
                         if (err) {
                             console.log('Uh-oh, managers are not showing.')
                         } else {
-                            console.log('this worked.');
                             console.table(data);
-                            sortEmp();
+                            empMenu();
                         }
                     }
 
@@ -132,16 +138,59 @@ function sortEmp() {
                         if (err) {
                             console.log('Uh-oh, managers are not showing.')
                         } else {
-                            console.log('this worked.');
                             console.table(data);
-                            sortEmp();
+                            empMenu();
                         }
                     }
 
                 )
             };//ends sortbyempmanager fn
 
-        })//ends .then()
+            function deleteEmployee() {
+                const empList = [];
+                db.query('SELECT CONCAT(employees.first_name, " ", employees.last_name) AS fullName FROM employees', (err, data) => {
+                    if (err) {
+                        console.log('Uh-oh, roles are not showing.')
+                    } else {
+                        data.forEach((empChoice) => {
+                            empList.push(empChoice.fullName);
+                        });
+                        empList.push('Back to main menu');
+
+                        inquirer
+                            .prompt([
+                                {
+                                    type: 'list',
+                                    name: 'deleteEmp',
+                                    message: 'Which employee would you like to delete?',
+                                    choices: empList
+                                }
+                            ])
+                            .then(function (data) {
+
+                                if (data.deleteEmp === 'Back to main menu') {
+                                    menu();
+                                } else {
+                                    db.query(
+                                        'DELETE FROM employees WHERE CONCAT(first_name, " ", last_name) = (?)',
+                                        [data.deleteEmp],
+                                        (err, data) => {
+                                            if (err) {
+                                                console.log('Could not delete employee.');
+                                            } else {
+                                                console.log('Future endeavor\'d.');
+                                                empMenu();
+                                            }
+                                        }
+                                    );//ends dbquery to delete role
+                                };//ends else
+                            })
+
+                    }//ends deleteEmployee fn
+
+                })//ends .then()
+            }
+        });//ends employee list top dbquery
 };//ends sortEmp fn
 
 function addEmployee() {
@@ -234,7 +283,7 @@ function addEmployee() {
                     [empRole],
                     (err, data) => {
                         if (err) {
-                            console.log('omg')
+                            console.log('omg, did not work.')
                         } else {
                             const roleId = data[0].id;
                             db.query(
@@ -364,7 +413,7 @@ function updateEmployeeMgr() {
                 data.forEach((selectedEmp) => {
                     listOfMgrs.push(selectedEmp.fullName)
                 })
-                console.log('success: list of employees to choose from');
+                console.log('Here is the list of available managers.');
 
                 inquirer
                     .prompt([
@@ -562,8 +611,6 @@ function roleMenu() {
         ])
         .then(function (userChoice) {
             if (userChoice.roleQ === 'Delete role') {
-                console.log('Role deleted.');
-                console.log(knowYourRole);
                 deleteRole();
             } else if (userChoice.roleQ === 'View all roles') {
                 viewAllRoles();
