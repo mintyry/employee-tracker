@@ -311,16 +311,16 @@ function updateEmployeeMgr() {
                             name: 'pickEmp',
                             message: 'Which employee would you like to update?',
                             choices: listOfMgrs
+                        },
+                        {
+                            type: 'list',
+                            name: 'pickMgr',
+                            message: 'Who is this employee\'s new manager?',
+                            choices: knowYourRole
                         }
-                        // {
-                        //     type: 'list',
-                        //     name: 'pickMgr',
-                        //     message: 'Who is this employee\'s new manager?',
-                        //     choices: knowYourRole
-                        // }
                     ])//ends prompt questions
                     .then(function (data) {
-                        console.log(listOfMgrs);
+                        console.log('We will dbquery to update the master table with the chosen manager where concat first and last = data.pickEmp');
                     })//ends prompt's.then()
             }
         }//ends cbfn
