@@ -193,7 +193,9 @@ function empMenu() {
         });//ends employee list top dbquery
 };//ends sortEmp fn
 
+//allows user to add a new employee
 function addEmployee() {
+    //creates dynamic list of roles
     const knowYourRole = [];
     db.query('SELECT title FROM roles', (err, data) => {
         if (err) {
@@ -205,6 +207,7 @@ function addEmployee() {
         }
     });
 
+    //creates dynamic list of potential/available managers
     const managerList = [];
     db.query('SELECT CONCAT(employees.first_name, " ", employees.last_name) AS manager FROM employees',
         (err, data) => {
@@ -220,6 +223,7 @@ function addEmployee() {
             }
         });
 
+    //prompts to build employee data
     function addMgrList(uniqueManagerList) {
         inquirer
             .prompt([
@@ -247,6 +251,7 @@ function addEmployee() {
                 }
             ])
             .then(function (data) {
+                //builds first name
                 const first = data.addFirst;
                 const firstName = first.charAt(0).toUpperCase() + (first).slice(1);
                 db.query(
@@ -260,6 +265,7 @@ function addEmployee() {
                         }
                     }
                 );
+                //builds last name
                 const last = data.addLast;
                 const lastName = last.charAt(0).toUpperCase() + (last).slice(1);
                 const fullName = firstName + " " + lastName;
@@ -274,6 +280,7 @@ function addEmployee() {
                         }
                     }
                 );
+                //selects their role
                 const empRole = data.addER;
                 db.query('SELECT id FROM roles WHERE title = (?)',
                     [empRole],
@@ -295,6 +302,7 @@ function addEmployee() {
                             );
                         }
                     });
+                    //selects their manager
                 const inputMgrId = data.addEM;
                 db.query(
                     'SELECT id FROM employees WHERE CONCAT(employees.first_name, " ", employees.last_name) = (?)',
@@ -325,7 +333,9 @@ function addEmployee() {
     }//ends function addMgrList
 };//ends addEmployee()
 
+//update the employee's role
 function updateEmployeeRole() {
+    //dynamic list of roles to choose from
     const knowYourRole = [];
     db.query('SELECT title FROM roles', (err, data) => {
         if (err) {
@@ -337,6 +347,7 @@ function updateEmployeeRole() {
         }
     });//ends role dbquery
 
+    //dynamic list of employees
     const empList = [];
     db.query('SELECT CONCAT(employees.first_name, " ", employees.last_name) AS fullName FROM employees', (err, data) => {
         if (err) {
@@ -348,6 +359,8 @@ function updateEmployeeRole() {
             updateEmpQuery(empList);
         }
     });//ends employee list dbquery
+
+    //presents questions to lead to employee being updated
     function updateEmpQuery(empList) {
         inquirer
             .prompt([
@@ -365,6 +378,7 @@ function updateEmployeeRole() {
                 }
             ])
             .then(function (data) {
+                //use data to get id and update employee based on that
                 const chosenEmp = data.pickEmp;
                 const newRole = data.pickRole;
                 db.query(
@@ -395,8 +409,10 @@ function updateEmployeeRole() {
     }
 };
 
+//update manager of employee
 function updateEmployeeMgr() {
-    const listOfMgrs = []
+    //dynamic list of employees
+    const employeesToManage = []
     db.query(
         'SELECT CONCAT(employees.first_name, " ", employees.last_name) AS fullName FROM employees',
         (err, data) => {
@@ -404,7 +420,7 @@ function updateEmployeeMgr() {
                 console.log('ERROR: No list of employees.');
             } else {
                 data.forEach((selectedEmp) => {
-                    listOfMgrs.push(selectedEmp.fullName)
+                    employeesToManage.push(selectedEmp.fullName)
                 })
                 console.log('Here is the list of available managers.');
 
@@ -414,11 +430,13 @@ function updateEmployeeMgr() {
                             type: 'list',
                             name: 'pickEmp',
                             message: 'Which employee would you like to update?',
-                            choices: listOfMgrs
+                            choices: employeesToManage
                         }
                     ])//ends prompt questions
                     .then(function (data) {
                         const pickedEmployee = data.pickEmp;
+
+                        //building dynamic list of available managers, which is every employee EXCEPT the one we are updating
                         const availableMgrs = [];
                         db.query(
                             'SELECT CONCAT(employees.first_name, " ", employees.last_name) AS fullName FROM employees WHERE CONCAT(employees.first_name, " ", employees.last_name) != (?)',
@@ -474,6 +492,7 @@ function updateEmployeeMgr() {
     )//ends db.query to select employee
 }//ends updateEmployeeMgr function
 
+//prints all roles
 function viewAllRoles() {
     //prints all content from roles table
     db.query('SELECT roles.id, roles.title, roles.salary, departments.name AS department FROM roles LEFT JOIN departments ON roles.department_id = departments.id',
@@ -487,7 +506,9 @@ function viewAllRoles() {
         })
 };
 
+//adds role
 function addRole() {
+    //dynamic list of departments
     const deptList = [];
     db.query('SELECT name FROM departments', (err, data) => {
         if (err) {
@@ -569,7 +590,9 @@ function addRole() {
         })
 };
 
+//renders sub menu in the view roles space, allowing to delete or view roles
 function roleMenu() {
+    //dynamic list of roles
     const knowYourRole = [];
     db.query('SELECT title FROM roles', (err, data) => {
         if (err) {
@@ -613,7 +636,7 @@ function roleMenu() {
                         }
                     ])
                     .then(function (data) {
-
+                        //if user realizes they dont want to delete, they still have a way out
                         if (data.deleteRole === 'Back to main menu') {
                             menu();
                         } else {
@@ -635,6 +658,7 @@ function roleMenu() {
         })//ends .then()
 };//ends roleMenu()
 
+//prints out table to show all departments
 function viewAllDepartments() {
     //prints all content from departments table
     db.query('SELECT * FROM departments', (err, data) => {
@@ -647,6 +671,7 @@ function viewAllDepartments() {
     })
 };
 
+//allows user to add department
 function addDepartment() {
     inquirer
         .prompt([{
@@ -673,6 +698,7 @@ function addDepartment() {
         })
 };
 
+//renders sub menu in the departments space, allowing to delete or view depts
 function deptMenu() {
     const listofDept = [];
     db.query(
@@ -740,7 +766,9 @@ function deptMenu() {
         });//ends .then()
 };
 
+//renders a table of the combined salary of employees in a department; essentially the total utilized budget of any selected department.
 function viewDeptBudget() {
+    //dynamic list of departments
     const budgetDept = [];
     db.query(
         'SELECT name FROM departments',
@@ -766,6 +794,7 @@ function viewDeptBudget() {
                         if (selectedDept.deptBud === 'Back to main menu') {
                             menu();
                         } else {
+                            //join tables and selects specifc columns, but also has subquery to utilize SUM helpers after grouping salaries by department
                             db.query(
                                 'SELECT departments.id, departments.name AS department, total_salary, COUNT(employees.id) AS total_employees FROM employees LEFT JOIN roles ON employees.role_id = roles.id LEFT JOIN departments ON roles.department_id = departments.id LEFT JOIN employees AS manage_table ON employees.manager_id = manage_table.id JOIN (SELECT roles.department_id, SUM(roles.salary) AS total_salary FROM roles GROUP BY roles.department_id) AS department_salary ON departments.id = department_salary.department_id WHERE departments.name = (?) GROUP BY departments.id, departments.name, total_salary ORDER BY department',
                                 [selectedDept.deptBud],
@@ -782,13 +811,14 @@ function viewDeptBudget() {
                         } //ends else
                     })//ends .then()
             }
-
         })
 };
 
+//quits the app
 function leave() {
     console.log('Fine, leave me.');
     process.exit();
 };
 
+//calls the function to start it all
 menu();
