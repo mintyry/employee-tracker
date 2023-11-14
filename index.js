@@ -796,7 +796,7 @@ function viewDeptBudget() {
                         } else {
                             //join tables and selects specifc columns, but also has subquery to utilize SUM helpers after grouping salaries by department
                             db.query(
-                                'SELECT departments.id, departments.name AS department, total_salary, COUNT(employees.id) AS total_employees FROM employees LEFT JOIN roles ON employees.role_id = roles.id LEFT JOIN departments ON roles.department_id = departments.id LEFT JOIN employees AS manage_table ON employees.manager_id = manage_table.id JOIN (SELECT roles.department_id, SUM(roles.salary) AS total_salary FROM roles GROUP BY roles.department_id) AS department_salary ON departments.id = department_salary.department_id WHERE departments.name = (?) GROUP BY departments.id, departments.name, total_salary ORDER BY department',
+                                'SELECT departments.id, departments.name AS department, (SELECT SUM(roles.salary) FROM roles WHERE roles.department_id = departments.id) AS total_salary, COUNT(employees.id) AS total_employees FROM employees LEFT JOIN roles ON employees.role_id = roles.id LEFT JOIN departments ON roles.department_id = departments.id LEFT JOIN employees AS manage_table ON employees.manager_id = manage_table.id WHERE departments.name = (?) GROUP BY departments.id, departments.name, total_salary ORDER BY department',
                                 [selectedDept.deptBud],
                                 (err, data) => {
                                     if (err) {

@@ -37,7 +37,12 @@ In order to install, please run `npm i`.
 
 <a id="Usage"></a>
 ## Usage 🧮
-When presented a menu of possible actions, the user can view various tables of data, mainly for departments, roles, and employees.
+When presented a menu of possible actions, the user can view various tables of data, mainly for departments, roles, and employees.  
+
+![Main menu for ManageCo app](./assets/images/menu.png)  
+
+Due to the structure of this assignment's instructions, the base features were all included in the main menu; most of the bonus features were added in the submenus for coherent and convenient access for the user.  
+The following image is an example of the master employees table when user chooses to "view all employees"; included in this image is the submenu for that feature.
 
 ![Viewing the employee table for this sample wrestling company](./assets/images/employeestbl.png)  
 
