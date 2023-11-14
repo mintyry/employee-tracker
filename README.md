@@ -46,7 +46,7 @@ The following image is an example of the master employees table when user choose
 
 ![Viewing the employee table for this sample wrestling company](./assets/images/employeestbl.png)  
 
-For a more detailed walkthrough of how to use this app, please watch this video.
+For a more detailed walkthrough of how to use this app, please [watch this video](https://watch.screencastify.com/v/BFjvY4ovP03p9w1wgd7h).
 
 
 
