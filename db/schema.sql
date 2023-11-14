@@ -1,5 +1,8 @@
+-- when this runs, it will first delete databases of this name
 DROP DATABASE IF EXISTS manageco;
+-- creates database from scratch
 CREATE DATABASE manageco;
+-- uses this database
 USE manageco;
 
 CREATE TABLE departments (
@@ -12,6 +15,7 @@ CREATE TABLE roles (
     title VARCHAR(30),
     salary DECIMAL,
     department_id INT,
+    -- deleting a role will leave it as null in related tables
     FOREIGN KEY (department_id) REFERENCES departments(id) ON DELETE SET NULL
 );
 
@@ -21,11 +25,6 @@ CREATE TABLE employees(
     last_name VARCHAR(30),
     role_id INT,
     manager_id INT,
+    -- if you delete an employee, all related info is also deleted
     FOREIGN KEY (role_id) REFERENCES roles(id) ON DELETE CASCADE
 );
-
--- INSERT INTO departments (name) 
--- VALUES ('Legal'), ('Marketing'), ('Production'), ('Talent');
-
--- test to see how to write add statement
--- INSERT INTO departments (name) VALUES ('announcer');

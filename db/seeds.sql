@@ -1,3 +1,5 @@
+-- inserting initial values for our tables in their corresponding columns
+
 INSERT INTO departments (name) 
 VALUES ('Legal'), ('Marketing'), ('Production'), ('Talent');
 
